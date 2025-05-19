@@ -274,4 +274,108 @@ void DataLoader::nettoyerCache() {
         delete pokemon;
     }
     pokemonCache.clear();
+}
+
+// Fonction pour charger les statistiques d'un joueur
+void DataLoader::chargerStatistiques(const std::string& fichier, Joueur* joueur) {
+    if (!joueur) return;
+    
+    std::ifstream file(fichier);
+    if (!file.is_open()) {
+        std::cerr << "Attention: Impossible d'ouvrir le fichier de statistiques: " << fichier << std::endl;
+        return; // On continue sans statistiques
+    }
+
+    std::string ligne;
+    // Ignorer l'en-tête
+    std::getline(file, ligne);
+    
+    while (std::getline(file, ligne)) {
+        auto donnees = splitLine(ligne, ',');
+        if (donnees.size() >= 5 && donnees[0] == joueur->getNom()) {
+            // On a trouvé le joueur
+            try {
+                int badges = std::stoi(donnees[1]);
+                joueur->gagnerBadge(badges - joueur->getBadges()); // Mettre à jour le compteur de badges
+                
+                int victoires = std::stoi(donnees[2]);
+                joueur->gagnerCombat(victoires - joueur->getVictoires()); // Mettre à jour les victoires
+                
+                int defaites = std::stoi(donnees[3]);
+                joueur->perdreCombat(defaites - joueur->getDefaites()); // Mettre à jour les défaites
+                
+                // Charger les badges spécifiques
+                if (donnees.size() >= 5 && !donnees[4].empty()) {
+                    auto badgesGagnes = splitLine(donnees[4], ';');
+                    for (const auto& badge : badgesGagnes) {
+                        joueur->ajouterBadge(badge);
+                    }
+                }
+                
+                break; // On a trouvé et chargé les statistiques
+            } catch (const std::exception& e) {
+                std::cerr << "Erreur lors du chargement des statistiques: " << e.what() << std::endl;
+            }
+        }
+    }
+}
+
+// Fonction pour sauvegarder les statistiques d'un joueur
+void DataLoader::sauvegarderStatistiques(const std::string& fichier, const Joueur* joueur) {
+    if (!joueur) return;
+    
+    // Lire le fichier actuel
+    std::vector<std::string> lignes;
+    bool joueurTrouve = false;
+    
+    {
+        std::ifstream fileIn(fichier);
+        if (fileIn.is_open()) {
+            std::string ligne;
+            // Lire l'en-tête
+            std::getline(fileIn, ligne);
+            lignes.push_back(ligne);
+            
+            // Lire les données et mettre à jour le joueur si trouvé
+            while (std::getline(fileIn, ligne)) {
+                auto donnees = splitLine(ligne, ',');
+                if (donnees.size() >= 1 && donnees[0] == joueur->getNom()) {
+                    // Mettre à jour la ligne du joueur
+                    std::string nouvelleLigne = joueur->getNom() + "," +
+                                               std::to_string(joueur->getBadges()) + "," +
+                                               std::to_string(joueur->getVictoires()) + "," +
+                                               std::to_string(joueur->getDefaites()) + "," +
+                                               joueur->getBadgesGagnesString();
+                    lignes.push_back(nouvelleLigne);
+                    joueurTrouve = true;
+                } else {
+                    lignes.push_back(ligne);
+                }
+            }
+        } else {
+            // Si le fichier n'existe pas, créer un en-tête
+            lignes.push_back("Nom,Badges,Victoires,Defaites,BadgesGagnes");
+        }
+    }
+    
+    // Si le joueur n'a pas été trouvé, ajouter une nouvelle ligne
+    if (!joueurTrouve) {
+        std::string nouvelleLigne = joueur->getNom() + "," +
+                                   std::to_string(joueur->getBadges()) + "," +
+                                   std::to_string(joueur->getVictoires()) + "," +
+                                   std::to_string(joueur->getDefaites()) + "," +
+                                   joueur->getBadgesGagnesString();
+        lignes.push_back(nouvelleLigne);
+    }
+    
+    // Réécrire le fichier avec les données mises à jour
+    std::ofstream fileOut(fichier);
+    if (!fileOut.is_open()) {
+        std::cerr << "Erreur: Impossible d'ouvrir le fichier pour écriture: " << fichier << std::endl;
+        return;
+    }
+    
+    for (const auto& ligne : lignes) {
+        fileOut << ligne << std::endl;
+    }
 } 

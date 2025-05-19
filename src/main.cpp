@@ -12,19 +12,30 @@
 #include <ctime>
 #include <random>
 
+// Codes ANSI pour les couleurs
+const std::string RESET = "\033[0m";
+const std::string ROUGE = "\033[31m";
+const std::string VERT = "\033[32m";
+const std::string JAUNE = "\033[33m";
+const std::string BLEU = "\033[34m";
+const std::string MAGENTA = "\033[35m";
+const std::string CYAN = "\033[36m";
+const std::string BLANC = "\033[37m";
+const std::string GRAS = "\033[1m";
+
 void afficherMenu() {
-    std::cout << "\n=== Menu Principal ===" << std::endl;
-    std::cout << "1. Afficher mes Pokémon" << std::endl;
-    std::cout << "2. Soigner mes Pokémon" << std::endl;
-    std::cout << "3. Afficher mes stats" << std::endl;
-    std::cout << "4. Défier un Leader" << std::endl;
-    std::cout << "5. Défier un Maître" << std::endl;
-    std::cout << "6. Défier un autre dresseur" << std::endl;
-    std::cout << "7. Interagir avec les Pokémon/Entraîneurs" << std::endl;
-    std::cout << "8. Gérer l'ordre des Pokémon" << std::endl;
-    std::cout << "9. Changer de dresseur" << std::endl;
-    std::cout << "0. Quitter" << std::endl;
-    std::cout << "Votre choix : ";
+    std::cout << "\n" << GRAS << MAGENTA << "=== Menu Principal ===" << RESET << std::endl;
+    std::cout << CYAN << "1. Afficher mes Pokémon" << RESET << std::endl;
+    std::cout << CYAN << "2. Soigner mes Pokémon" << RESET << std::endl;
+    std::cout << CYAN << "3. Afficher mes stats" << RESET << std::endl;
+    std::cout << VERT << "4. Défier un Leader" << RESET << std::endl;
+    std::cout << VERT << "5. Défier un Maître" << RESET << std::endl;
+    std::cout << VERT << "6. Défier un autre dresseur" << RESET << std::endl;
+    std::cout << CYAN << "7. Interagir avec les Pokémon/Entraîneurs" << RESET << std::endl;
+    std::cout << CYAN << "8. Gérer l'ordre des Pokémon" << RESET << std::endl;
+    std::cout << CYAN << "9. Changer de dresseur" << RESET << std::endl;
+    std::cout << ROUGE << "0. Quitter" << RESET << std::endl;
+    std::cout << GRAS << "Votre choix : " << RESET;
 }
 
 void viderBuffer() {
@@ -192,33 +203,60 @@ bool combat(Joueur* joueur, Entraineur* adversaire) {
 }
 
 void afficherDetailsPokemon(const Pokemon* pokemon) {
-    std::cout << "\n=== Détails de " << pokemon->getNom() << " ===" << std::endl;
-    std::cout << "Types : ";
+    std::cout << "\n" << GRAS << BLEU << "=== Détails de " << pokemon->getNom() << " ===" << RESET << std::endl;
+    std::cout << JAUNE << "Types : " << RESET;
     for (const auto& type : pokemon->getTypes()) {
         switch(type) {
-            case Type::NORMAL: std::cout << "Normal"; break;
-            case Type::FEU: std::cout << "Feu"; break;
-            case Type::EAU: std::cout << "Eau"; break;
-            case Type::PLANTE: std::cout << "Plante"; break;
-            case Type::ELECTRIK: std::cout << "Electrik"; break;
-            case Type::GLACE: std::cout << "Glace"; break;
-            case Type::COMBAT: std::cout << "Combat"; break;
-            case Type::POISON: std::cout << "Poison"; break;
-            case Type::SOL: std::cout << "Sol"; break;
-            case Type::VOL: std::cout << "Vol"; break;
-            case Type::PSY: std::cout << "Psy"; break;
-            case Type::INSECTE: std::cout << "Insecte"; break;
-            case Type::ROCHE: std::cout << "Roche"; break;
-            case Type::SPECTRE: std::cout << "Spectre"; break;
-            case Type::DRAGON: std::cout << "Dragon"; break;
-            case Type::ACIER: std::cout << "Acier"; break;
-            case Type::FEE: std::cout << "Fée"; break;
+            case Type::NORMAL: std::cout << BLANC << "Normal" << RESET; break;
+            case Type::FEU: std::cout << ROUGE << "Feu" << RESET; break;
+            case Type::EAU: std::cout << BLEU << "Eau" << RESET; break;
+            case Type::PLANTE: std::cout << VERT << "Plante" << RESET; break;
+            case Type::ELECTRIK: std::cout << JAUNE << "Electrik" << RESET; break;
+            case Type::GLACE: std::cout << CYAN << "Glace" << RESET; break;
+            case Type::COMBAT: std::cout << ROUGE << "Combat" << RESET; break;
+            case Type::POISON: std::cout << MAGENTA << "Poison" << RESET; break;
+            case Type::SOL: std::cout << JAUNE << "Sol" << RESET; break;
+            case Type::VOL: std::cout << CYAN << "Vol" << RESET; break;
+            case Type::PSY: std::cout << MAGENTA << "Psy" << RESET; break;
+            case Type::INSECTE: std::cout << VERT << "Insecte" << RESET; break;
+            case Type::ROCHE: std::cout << JAUNE << "Roche" << RESET; break;
+            case Type::SPECTRE: std::cout << MAGENTA << "Spectre" << RESET; break;
+            case Type::DRAGON: std::cout << BLEU << "Dragon" << RESET; break;
+            case Type::ACIER: std::cout << BLANC << "Acier" << RESET; break;
+            case Type::TENEBRES: std::cout << MAGENTA << "Ténèbres" << RESET; break;
+            case Type::FEE: std::cout << MAGENTA << "Fée" << RESET; break;
         }
         std::cout << " ";
     }
     std::cout << std::endl;
-    std::cout << "Points de vie : " << pokemon->getCurrentHp() << "/" << pokemon->getMaxHp() << std::endl;
-    std::cout << "Attaque : " << pokemon->getNomAttaque() << " (Dégâts : " << pokemon->getDegatsAttaque() << ")" << std::endl;
+    
+    // Barre de vie colorée
+    std::cout << CYAN << "Points de vie : " << RESET;
+    int pourcentageVie = (pokemon->getCurrentHp() * 100) / pokemon->getMaxHp();
+    std::string couleurVie = ROUGE;  // Rouge par défaut
+    
+    if (pourcentageVie > 70) {
+        couleurVie = VERT;  // Bonne santé
+    } else if (pourcentageVie > 30) {
+        couleurVie = JAUNE;  // Santé moyenne
+    }
+    
+    std::cout << couleurVie << pokemon->getCurrentHp() << RESET << "/" << GRAS << pokemon->getMaxHp() << RESET << " ";
+    
+    // Afficher une barre de progression
+    std::cout << "[";
+    int barresPleines = (pourcentageVie * 20) / 100;
+    for (int i = 0; i < 20; i++) {
+        if (i < barresPleines) {
+            std::cout << couleurVie << "█" << RESET;
+        } else {
+            std::cout << "░";
+        }
+    }
+    std::cout << "]" << std::endl;
+    
+    std::cout << MAGENTA << "Attaque : " << GRAS << pokemon->getNomAttaque() << RESET 
+              << " (" << ROUGE << "Dégâts : " << GRAS << pokemon->getDegatsAttaque() << RESET << ")" << std::endl;
 }
 
 void afficherEquipePokemonInteractif(const Entraineur* entraineur) {
@@ -324,12 +362,23 @@ void interagirAvecPokemonEtEntraineurs(Joueur* joueur, const Maitre* maitreCoura
     bool continuerInteraction = true;
     
     while (continuerInteraction) {
-        std::cout << "\n=== Menu d'Interaction ===" << std::endl;
+        std::cout << "\n" << GRAS << MAGENTA << "=== Menu d'Interaction ===" << RESET << std::endl;
         std::cout << "1. Interagir avec mes Pokémon" << std::endl;
         std::cout << "2. Interagir avec les Leaders vaincus" << std::endl;
-        if (joueur->getBadges() >= leaders.size() && !maitres.empty()) {
-            std::cout << "3. Interagir avec les Maîtres" << std::endl;
+        
+        // Vérifier si au moins un maître a été vaincu
+        bool maitreVaincu = false;
+        for (const Maitre* maitre : maitres) {
+            if (maitre->aEteVaincu()) {
+                maitreVaincu = true;
+                break;
+            }
         }
+        
+        if (maitreVaincu) {
+                         std::cout << "3. Interagir avec les Maîtres vaincus" << std::endl;
+        }
+        
         std::cout << "0. Retour" << std::endl;
         std::cout << "Votre choix : ";
 
@@ -390,38 +439,36 @@ void interagirAvecPokemonEtEntraineurs(Joueur* joueur, const Maitre* maitreCoura
                 break;
             }
             case 3: {
-                if (joueur->getBadges() >= leaders.size() && !maitres.empty()) {
-                    // Créer une liste des Maîtres vaincus
-                    std::vector<Maitre*> maitresVaincus;
-                    for (Maitre* maitre : maitres) {
-                        if (maitre->aEteVaincu()) {
-                            maitresVaincus.push_back(maitre);
-                        }
+                // Créer une liste des Maîtres vaincus
+                std::vector<Maitre*> maitresVaincus;
+                for (Maitre* maitre : maitres) {
+                    if (maitre->aEteVaincu()) {
+                        maitresVaincus.push_back(maitre);
                     }
-                    
-                    if (maitresVaincus.empty()) {
-                        std::cout << "Vous n'avez pas encore vaincu de Maître." << std::endl;
-                        pause();
-                    } else {
-                        bool choisirMaitre = true;
-                        while (choisirMaitre) {
-                            std::cout << "\nChoisissez un Maître vaincu pour interagir (0 pour revenir) :" << std::endl;
-                            for (size_t i = 0; i < maitresVaincus.size(); ++i) {
-                                std::cout << i+1 << ". " << maitresVaincus[i]->getNom() << ", " << maitresVaincus[i]->getTitre() << std::endl;
-                            }
-                            
-                            int choixMaitre = lireChoix();
-                            if (choixMaitre == 0) {
-                                choisirMaitre = false;
-                            } else if (choixMaitre >= 1 && choixMaitre <= static_cast<int>(maitresVaincus.size())) {
-                                Maitre* maitre = maitresVaincus[choixMaitre-1];
-                                std::cout << maitre->interagir() << std::endl;
-                                pause(2000);
-                                choisirMaitre = false;
-                            } else {
-                                std::cout << "Choix invalide !" << std::endl;
-                                pause();
-                            }
+                }
+                
+                if (maitresVaincus.empty()) {
+                    std::cout << "Vous n'avez pas encore vaincu de Maître." << std::endl;
+                    pause();
+                } else {
+                    bool choisirMaitre = true;
+                    while (choisirMaitre) {
+                        std::cout << "\nChoisissez un Maître vaincu pour interagir (0 pour revenir) :" << std::endl;
+                        for (size_t i = 0; i < maitresVaincus.size(); ++i) {
+                            std::cout << i+1 << ". " << maitresVaincus[i]->getNom() << ", " << maitresVaincus[i]->getTitre() << std::endl;
+                        }
+                        
+                        int choixMaitre = lireChoix();
+                        if (choixMaitre == 0) {
+                            choisirMaitre = false;
+                        } else if (choixMaitre >= 1 && choixMaitre <= static_cast<int>(maitresVaincus.size())) {
+                            Maitre* maitre = maitresVaincus[choixMaitre-1];
+                            std::cout << maitre->interagir() << std::endl;
+                            pause(2000);
+                            choisirMaitre = false;
+                        } else {
+                            std::cout << "Choix invalide !" << std::endl;
+                            pause();
                         }
                     }
                 }
@@ -438,7 +485,7 @@ void interagirAvecPokemonEtEntraineurs(Joueur* joueur, const Maitre* maitreCoura
 void gererOrdrePokemon(Joueur* joueur) {
     bool continuer = true;
     while (continuer) {
-        std::cout << "\n=== Gestion de l'ordre des Pokémon ===" << std::endl;
+        std::cout << "\n" << GRAS << MAGENTA << "=== Gestion de l'ordre des Pokémon ===" << RESET << std::endl;
         std::cout << "Ordre actuel de vos Pokémon :" << std::endl;
         const auto& pokemons = joueur->getPokemons();
         for (size_t i = 0; i < pokemons.size(); ++i) {
@@ -509,7 +556,7 @@ void defierAutreDresseur(Joueur* joueurPrincipal, const std::string& fichierJoue
     // Afficher la liste des dresseurs disponibles
     bool continuer = true;
     while (continuer) {
-        std::cout << "\n=== Dresseurs disponibles ===" << std::endl;
+        std::cout << "\n" << GRAS << MAGENTA << "=== Dresseurs disponibles ===" << RESET << std::endl;
         for (size_t i = 0; i < dresseursFiltres.size(); ++i) {
             std::cout << i + 1 << ". " << dresseursFiltres[i]->getNom() << std::endl;
         }
@@ -529,6 +576,11 @@ void defierAutreDresseur(Joueur* joueurPrincipal, const std::string& fichierJoue
             if (resultatCombat) {
                 std::cout << "Félicitations ! Vous avez battu " << adversaire->getNom() << " !" << std::endl;
                 joueurPrincipal->gagnerCombat();
+                if (!adversaire->aEteVaincu()) {
+                    adversaire->setVaincu(true);
+                    // Donner le badge au joueur (cette méthode appelle déjà gagnerBadge)
+                    adversaire->donnerBadge(*joueurPrincipal);
+                }
             } else if (resultatCombat == false) {
                 // Si le combat n'a pas pu commencer à cause d'un Pokémon K.O.
                 // Aucune action supplémentaire requise, le message est déjà affiché
@@ -536,6 +588,10 @@ void defierAutreDresseur(Joueur* joueurPrincipal, const std::string& fichierJoue
             } else {
                 std::cout << "Vous avez perdu contre " << adversaire->getNom() << "." << std::endl;
                 joueurPrincipal->perdreCombat();
+                // Sauvegarder les statistiques après la défaite
+                DataLoader::sauvegarderStatistiques("data/statistiques.csv", joueurPrincipal);
+                // Soigner l'équipe du Leader après le combat
+                adversaire->soignerEquipe();
             }
             
             // Soigner l'équipe de l'adversaire après le combat
@@ -574,7 +630,7 @@ Joueur* changerDresseur(Joueur* joueurActuel, const std::string& fichierJoueurs)
     }
     
     // Afficher la liste des dresseurs disponibles
-    std::cout << "\n=== Sélection du dresseur ===" << std::endl;
+    std::cout << "\n" << GRAS << MAGENTA << "=== Sélection du dresseur ===" << RESET << std::endl;
     std::cout << "Dresseur actuel : " << joueurActuel->getNom() << std::endl;
     std::cout << "\nDresseurs disponibles :" << std::endl;
     
@@ -651,19 +707,23 @@ int main() {
     try {
         std::cout << "Chargement des Pokémon..." << std::endl;
         // Charger d'abord tous les Pokémon disponibles
-        DataLoader::chargerPokemons("../data/pokemon.csv");
+        DataLoader::chargerPokemons("data/pokemon.csv");
         
         std::cout << "Chargement du joueur..." << std::endl;
         // Charger le joueur avec ses Pokémon
-        joueur = DataLoader::chargerJoueur("../data/joueur.csv");
+        joueur = DataLoader::chargerJoueur("data/joueur.csv");
+        
+        // Charger les statistiques du joueur
+        std::cout << "Chargement des statistiques..." << std::endl;
+        DataLoader::chargerStatistiques("data/statistiques.csv", joueur);
         
         std::cout << "Chargement des Leaders..." << std::endl;
         // Charger les Leaders
-        leaders = DataLoader::chargerLeaders("../data/leaders.csv");
+        leaders = DataLoader::chargerLeaders("data/leaders.csv");
         
         std::cout << "Chargement des Maîtres..." << std::endl;
         // Charger les Maîtres
-        maitres = DataLoader::chargerMaitres("../data/maitres.csv");
+        maitres = DataLoader::chargerMaitres("data/maitres.csv");
 
         std::cout << "Chargement terminé !" << std::endl;
 
@@ -687,11 +747,47 @@ int main() {
                 break;
 
             case 3: // Stats
-                std::cout << "\nStatistiques de " << joueur->getNom() << std::endl;
-                std::cout << "Badges : " << joueur->getBadges() << std::endl;
-                std::cout << "Victoires : " << joueur->getVictoires() << std::endl;
-                std::cout << "Défaites : " << joueur->getDefaites() << std::endl;
+                {
+                bool dansStats = true;
+                while (dansStats) {
+                    std::cout << "\n" << GRAS << MAGENTA << "=== Statistiques de " << joueur->getNom() << " ===" << RESET << std::endl;
+                    std::cout << "Badges : " << joueur->getBadges() << std::endl;
+                    
+                    // Afficher les badges spécifiques gagnés
+                    const auto& badgesGagnes = joueur->getBadgesGagnes();
+                    if (!badgesGagnes.empty()) {
+                        std::cout << "Badges gagnés : ";
+                        bool premier = true;
+                        for (const auto& badge : badgesGagnes) {
+                            if (!premier) {
+                                std::cout << ", ";
+                            }
+                            std::cout << badge;
+                            premier = false;
+                        }
+                        std::cout << std::endl;
+                    } else {
+                        std::cout << "Aucun badge gagné pour l'instant" << std::endl;
+                    }
+                    
+                    std::cout << "Victoires : " << joueur->getVictoires() << std::endl;
+                    std::cout << "Défaites : " << joueur->getDefaites() << std::endl;
+                    
+                    if (joueur->getVictoires() > 0 || joueur->getDefaites() > 0) {
+                        double ratio = joueur->getVictoires() / static_cast<double>(joueur->getVictoires() + joueur->getDefaites());
+                        std::cout << "Ratio de victoires : " << static_cast<int>(ratio * 100) << "%" << std::endl;
+                    }
+                    
+                    std::cout << "\n0. Retour au menu principal" << std::endl;
+                    std::cout << "Votre choix : ";
+                    
+                    int choixStat = lireChoix();
+                    if (choixStat == 0) {
+                        dansStats = false;
+                    }
+                }
                 break;
+                }
 
             case 4: // Défier Leader
                 if (leaders.empty()) {
@@ -716,10 +812,13 @@ int main() {
                             if (resultatCombat) {
                                 std::cout << "Félicitations ! Vous avez battu " << leader->getNom() << " !" << std::endl;
                                 if (!leader->aEteVaincu()) {
-                                    joueur->gagnerBadge();
                                     leader->setVaincu(true);
+                                    // Donner le badge au joueur (cette méthode appelle déjà gagnerBadge)
+                                    leader->donnerBadge(*joueur);
                                 }
                                 joueur->gagnerCombat();
+                                // Sauvegarder les statistiques après la victoire
+                                DataLoader::sauvegarderStatistiques("data/statistiques.csv", joueur);
                                 // Soigner l'équipe du Leader après le combat
                                 leader->soignerEquipe();
                             } else if (resultatCombat == false) {
@@ -729,6 +828,8 @@ int main() {
                             } else {
                                 std::cout << "Vous avez perdu contre " << leader->getNom() << "." << std::endl;
                                 joueur->perdreCombat();
+                                // Sauvegarder les statistiques après la défaite
+                                DataLoader::sauvegarderStatistiques("data/statistiques.csv", joueur);
                                 // Soigner l'équipe du Leader après le combat
                                 leader->soignerEquipe();
                             }
@@ -772,6 +873,8 @@ int main() {
                         joueur->gagnerCombat();
                         maitreCourant->incrementerVictoires();
                         maitreCourant->setVaincu(true); // Marquer le maître comme vaincu
+                        // Sauvegarder les statistiques après la victoire
+                        DataLoader::sauvegarderStatistiques("data/statistiques.csv", joueur);
                     } else if (resultatCombat == false) {
                         // Si le combat n'a pas pu commencer à cause d'un Pokémon K.O.
                         // Aucune action supplémentaire requise, le message est déjà affiché
@@ -779,6 +882,8 @@ int main() {
                     } else {
                         std::cout << "Vous avez perdu contre " << maitreCourant->getNom() << "." << std::endl;
                         joueur->perdreCombat();
+                        // Sauvegarder les statistiques après la défaite
+                        DataLoader::sauvegarderStatistiques("data/statistiques.csv", joueur);
                     }
                     
                     // Soigner l'équipe du Maître après le combat
@@ -787,7 +892,7 @@ int main() {
                 break;
 
             case 6: // Défier un autre dresseur
-                defierAutreDresseur(joueur, "../data/joueur.csv");
+                defierAutreDresseur(joueur, "data/joueur.csv");
                 break;
 
             case 7: // Interagir
@@ -799,10 +904,12 @@ int main() {
                 break;
 
             case 9: // Changer de dresseur
-                joueur = changerDresseur(joueur, "../data/joueur.csv");
+                joueur = changerDresseur(joueur, "data/joueur.csv");
                 break;
 
             case 0: // Quitter
+                std::cout << "Sauvegarde des statistiques..." << std::endl;
+                DataLoader::sauvegarderStatistiques("data/statistiques.csv", joueur);
                 std::cout << "Au revoir !" << std::endl;
                 continuer = false;
                 break;

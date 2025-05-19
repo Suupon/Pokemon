@@ -1,4 +1,5 @@
 #include "Leader.hpp"
+#include "Joueur.hpp"
 
 Leader::Leader(const std::string& nom, const std::vector<Pokemon*>& pokemons,
                const std::string& badge, const std::string& gymnase, Type specialite)
@@ -18,6 +19,13 @@ std::string Leader::messageDefi() const {
 
 void Leader::donnerBadge(Entraineur& challenger) {
     vaincu = true;
-    std::string message = "Félicitations ! Tu as gagné le " + badge + " !";
     
+    // Si le challenger est un Joueur, lui ajouter le badge spécifique
+    Joueur* joueur = dynamic_cast<Joueur*>(&challenger);
+    if (joueur) {
+        joueur->ajouterBadge(badge);
+        joueur->gagnerBadge();
+    }
+    
+    std::string message = "Félicitations ! Tu as gagné le " + badge + " !";
 } 

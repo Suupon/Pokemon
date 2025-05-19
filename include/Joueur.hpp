@@ -2,12 +2,15 @@
 #define JOUEUR_HPP
 
 #include "Entraineur.hpp"
+#include <set>
 
 class Joueur : public Entraineur {
 private:
     int badges;
     int victoires;
     int defaites;
+    std::set<std::string> badgesGagnes; // Pour stocker les noms des badges gagnés
+    bool vaincu;  // Pour indiquer si le joueur a été vaincu (utilisé lors des combats contre d'autres joueurs)
 
 public:
     Joueur(const std::string& nom);
@@ -17,11 +20,25 @@ public:
     int getBadges() const { return badges; }
     int getVictoires() const { return victoires; }
     int getDefaites() const { return defaites; }
+    const std::set<std::string>& getBadgesGagnes() const { return badgesGagnes; }
+    bool aEteVaincu() const { return vaincu; }
 
     // Setters
-    void gagnerBadge() { badges++; }
-    void gagnerCombat() { victoires++; }
-    void perdreCombat() { defaites++; }
+    void gagnerBadge(int nb = 1) { badges += nb; }
+    void gagnerCombat(int nb = 1) { victoires += nb; }
+    void perdreCombat(int nb = 1) { defaites += nb; }
+    void ajouterBadge(const std::string& badge) { badgesGagnes.insert(badge); }
+    void setBadgesGagnes(const std::set<std::string>& badges) { badgesGagnes = badges; }
+    void setVaincu(bool etat) { vaincu = etat; }
+    
+    // Méthode pour vérifier si un badge spécifique a été gagné
+    bool possedeBadge(const std::string& badge) const { return badgesGagnes.find(badge) != badgesGagnes.end(); }
+
+    // Retourne les badges gagnés sous forme de chaîne CSV
+    std::string getBadgesGagnesString() const;
+
+    // Méthode pour donner un badge (utilisée lors des combats entre joueurs)
+    void donnerBadge(Entraineur& challenger);
 
     // Gestion de l'ordre des Pokémon
     void echangerPokemon(int pos1, int pos2);

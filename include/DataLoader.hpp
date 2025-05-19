@@ -28,6 +28,10 @@ public:
     static std::vector<Leader*> chargerLeaders(const std::string& fichier);
     static std::vector<Maitre*> chargerMaitres(const std::string& fichier);
     
+    // Gestion des statistiques
+    static void chargerStatistiques(const std::string& fichier, Joueur* joueur);
+    static void sauvegarderStatistiques(const std::string& fichier, const Joueur* joueur);
+    
     // Nettoyage du cache
     static void nettoyerCache();
 };

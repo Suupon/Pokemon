@@ -24,6 +24,7 @@ enum class Type {
     SPECTRE,
     DRAGON,
     ACIER,
+    TENEBRES,
     FEE
 };
 

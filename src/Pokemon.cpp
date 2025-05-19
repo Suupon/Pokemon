@@ -62,6 +62,7 @@ Type Pokemon::stringToType(const std::string& typeStr) {
     if (normalizedType == "spectre") return Type::SPECTRE;
     if (normalizedType == "dragon") return Type::DRAGON;
     if (normalizedType == "acier") return Type::ACIER;
+    if (normalizedType == "tenebres") return Type::TENEBRES;
     if (normalizedType == "fee") return Type::FEE;
     
     throw std::invalid_argument("Type inconnu: " + typeStr);
@@ -77,30 +78,164 @@ void Pokemon::initTableEfficacite() {
         }
     }
 
-    // Définition des efficacités spéciales
-    // Feu
-    tableEfficacite[Type::FEU][Type::PLANTE] = 2.0;
+    // Définition des efficacités basées sur l'image fournie
+    // Acier défensif
+    tableEfficacite[Type::NORMAL][Type::ACIER] = 0.5;
     tableEfficacite[Type::FEU][Type::ACIER] = 2.0;
-    tableEfficacite[Type::FEU][Type::EAU] = 0.5;
-    tableEfficacite[Type::FEU][Type::ROCHE] = 0.5;
+    tableEfficacite[Type::EAU][Type::ACIER] = 0.5;
+    tableEfficacite[Type::PLANTE][Type::ACIER] = 0.5;
+    tableEfficacite[Type::ELECTRIK][Type::ACIER] = 0.5;
+    tableEfficacite[Type::GLACE][Type::ACIER] = 0.5;
+    tableEfficacite[Type::COMBAT][Type::ACIER] = 2.0;
+    tableEfficacite[Type::POISON][Type::ACIER] = 0.0;
+    tableEfficacite[Type::SOL][Type::ACIER] = 2.0;
+    tableEfficacite[Type::VOL][Type::ACIER] = 0.5;
+    tableEfficacite[Type::PSY][Type::ACIER] = 0.5;
+    tableEfficacite[Type::INSECTE][Type::ACIER] = 0.5;
+    tableEfficacite[Type::ROCHE][Type::ACIER] = 0.5;
+    tableEfficacite[Type::DRAGON][Type::ACIER] = 0.5;
+    tableEfficacite[Type::FEE][Type::ACIER] = 0.5;
 
-    // Eau
-    tableEfficacite[Type::EAU][Type::FEU] = 2.0;
-    tableEfficacite[Type::EAU][Type::ROCHE] = 2.0;
-    tableEfficacite[Type::EAU][Type::PLANTE] = 0.5;
+    // Combat défensif
+    tableEfficacite[Type::NORMAL][Type::COMBAT] = 1.0;
+    tableEfficacite[Type::FEU][Type::COMBAT] = 1.0;
+    tableEfficacite[Type::EAU][Type::COMBAT] = 1.0;
+    tableEfficacite[Type::PLANTE][Type::COMBAT] = 1.0;
+    tableEfficacite[Type::ELECTRIK][Type::COMBAT] = 1.0;
+    tableEfficacite[Type::GLACE][Type::COMBAT] = 2.0;
+    tableEfficacite[Type::COMBAT][Type::COMBAT] = 1.0;
+    tableEfficacite[Type::POISON][Type::COMBAT] = 0.5;
+    tableEfficacite[Type::SOL][Type::COMBAT] = 1.0;
+    tableEfficacite[Type::VOL][Type::COMBAT] = 2.0;
+    tableEfficacite[Type::PSY][Type::COMBAT] = 2.0;
+    tableEfficacite[Type::INSECTE][Type::COMBAT] = 0.5;
+    tableEfficacite[Type::ROCHE][Type::COMBAT] = 0.5;
+    tableEfficacite[Type::SPECTRE][Type::COMBAT] = 1.0;
+    tableEfficacite[Type::FEE][Type::COMBAT] = 2.0;
+
+    // Dragon défensif
+    tableEfficacite[Type::FEU][Type::DRAGON] = 0.5;
     tableEfficacite[Type::EAU][Type::DRAGON] = 0.5;
+    tableEfficacite[Type::PLANTE][Type::DRAGON] = 0.5;
+    tableEfficacite[Type::ELECTRIK][Type::DRAGON] = 0.5;
+    tableEfficacite[Type::GLACE][Type::DRAGON] = 2.0;
+    tableEfficacite[Type::DRAGON][Type::DRAGON] = 2.0;
+    tableEfficacite[Type::FEE][Type::DRAGON] = 0.0;
 
-    // Plante
+    // Eau défensif
+    tableEfficacite[Type::FEU][Type::EAU] = 0.5;
+    tableEfficacite[Type::EAU][Type::EAU] = 0.5;
     tableEfficacite[Type::PLANTE][Type::EAU] = 2.0;
-    tableEfficacite[Type::PLANTE][Type::ROCHE] = 2.0;
-    tableEfficacite[Type::PLANTE][Type::FEU] = 0.5;
-    tableEfficacite[Type::PLANTE][Type::INSECTE] = 0.5;
-
-    // Électrik
     tableEfficacite[Type::ELECTRIK][Type::EAU] = 2.0;
-    tableEfficacite[Type::ELECTRIK][Type::VOL] = 2.0;
-    tableEfficacite[Type::ELECTRIK][Type::SOL] = 0.0;
+    tableEfficacite[Type::GLACE][Type::EAU] = 0.5;
+    tableEfficacite[Type::ACIER][Type::EAU] = 0.5;
+
+    // Electrik défensif
+    tableEfficacite[Type::ELECTRIK][Type::ELECTRIK] = 0.5;
+    tableEfficacite[Type::SOL][Type::ELECTRIK] = 2.0;
+    tableEfficacite[Type::VOL][Type::ELECTRIK] = 0.5;
+    tableEfficacite[Type::ACIER][Type::ELECTRIK] = 0.5;
+
+    // Fee défensif
+    tableEfficacite[Type::COMBAT][Type::FEE] = 0.5;
+    tableEfficacite[Type::POISON][Type::FEE] = 2.0;
+    tableEfficacite[Type::INSECTE][Type::FEE] = 0.5;
+    tableEfficacite[Type::DRAGON][Type::FEE] = 0.0;
+    tableEfficacite[Type::ACIER][Type::FEE] = 2.0;
+
+    // Feu défensif
+    tableEfficacite[Type::FEU][Type::FEU] = 0.5;
+    tableEfficacite[Type::EAU][Type::FEU] = 2.0;
+    tableEfficacite[Type::PLANTE][Type::FEU] = 0.5;
+    tableEfficacite[Type::GLACE][Type::FEU] = 0.5;
+    tableEfficacite[Type::COMBAT][Type::FEU] = 1.0;
+    tableEfficacite[Type::SOL][Type::FEU] = 2.0;
+    tableEfficacite[Type::INSECTE][Type::FEU] = 0.5;
+    tableEfficacite[Type::ROCHE][Type::FEU] = 2.0;
+    tableEfficacite[Type::ACIER][Type::FEU] = 0.5;
+    tableEfficacite[Type::FEE][Type::FEU] = 0.5;
+
+    // Glace défensif
+    tableEfficacite[Type::FEU][Type::GLACE] = 2.0;
+    tableEfficacite[Type::GLACE][Type::GLACE] = 0.5;
+    tableEfficacite[Type::COMBAT][Type::GLACE] = 2.0;
+    tableEfficacite[Type::ROCHE][Type::GLACE] = 2.0;
+    tableEfficacite[Type::ACIER][Type::GLACE] = 2.0;
+
+    // Insecte défensif
+    tableEfficacite[Type::FEU][Type::INSECTE] = 2.0;
+    tableEfficacite[Type::PLANTE][Type::INSECTE] = 0.5;
+    tableEfficacite[Type::COMBAT][Type::INSECTE] = 0.5;
+    tableEfficacite[Type::SOL][Type::INSECTE] = 0.5;
+    tableEfficacite[Type::VOL][Type::INSECTE] = 2.0;
+    tableEfficacite[Type::ROCHE][Type::INSECTE] = 2.0;
+
+    // Normal défensif
+    tableEfficacite[Type::COMBAT][Type::NORMAL] = 2.0;
+    tableEfficacite[Type::SPECTRE][Type::NORMAL] = 0.0;
+
+    // Plante défensif
+    tableEfficacite[Type::FEU][Type::PLANTE] = 2.0;
+    tableEfficacite[Type::EAU][Type::PLANTE] = 0.5;
+    tableEfficacite[Type::PLANTE][Type::PLANTE] = 0.5;
     tableEfficacite[Type::ELECTRIK][Type::PLANTE] = 0.5;
+    tableEfficacite[Type::GLACE][Type::PLANTE] = 2.0;
+    tableEfficacite[Type::POISON][Type::PLANTE] = 2.0;
+    tableEfficacite[Type::SOL][Type::PLANTE] = 0.5;
+    tableEfficacite[Type::VOL][Type::PLANTE] = 2.0;
+    tableEfficacite[Type::INSECTE][Type::PLANTE] = 2.0;
+
+    // Poison défensif
+    tableEfficacite[Type::PLANTE][Type::POISON] = 0.5;
+    tableEfficacite[Type::COMBAT][Type::POISON] = 0.5;
+    tableEfficacite[Type::POISON][Type::POISON] = 0.5;
+    tableEfficacite[Type::SOL][Type::POISON] = 2.0;
+    tableEfficacite[Type::PSY][Type::POISON] = 2.0;
+    tableEfficacite[Type::INSECTE][Type::POISON] = 0.5;
+    tableEfficacite[Type::FEE][Type::POISON] = 0.5;
+
+    // Psy défensif
+    tableEfficacite[Type::COMBAT][Type::PSY] = 0.5;
+    tableEfficacite[Type::PSY][Type::PSY] = 0.5;
+    tableEfficacite[Type::INSECTE][Type::PSY] = 2.0;
+    tableEfficacite[Type::SPECTRE][Type::PSY] = 2.0;
+    tableEfficacite[Type::TENEBRES][Type::PSY] = 2.0;
+
+    // Roche défensif
+    tableEfficacite[Type::NORMAL][Type::ROCHE] = 0.5;
+    tableEfficacite[Type::FEU][Type::ROCHE] = 0.5;
+    tableEfficacite[Type::EAU][Type::ROCHE] = 2.0;
+    tableEfficacite[Type::PLANTE][Type::ROCHE] = 2.0;
+    tableEfficacite[Type::COMBAT][Type::ROCHE] = 2.0;
+    tableEfficacite[Type::POISON][Type::ROCHE] = 0.5;
+    tableEfficacite[Type::SOL][Type::ROCHE] = 2.0;
+    tableEfficacite[Type::VOL][Type::ROCHE] = 0.5;
+    tableEfficacite[Type::ACIER][Type::ROCHE] = 2.0;
+
+    // Sol défensif
+    tableEfficacite[Type::EAU][Type::SOL] = 2.0;
+    tableEfficacite[Type::PLANTE][Type::SOL] = 2.0;
+    tableEfficacite[Type::ELECTRIK][Type::SOL] = 0.0;
+    tableEfficacite[Type::GLACE][Type::SOL] = 2.0;
+    tableEfficacite[Type::POISON][Type::SOL] = 0.5;
+    tableEfficacite[Type::ROCHE][Type::SOL] = 0.5;
+
+    // Spectre défensif
+    tableEfficacite[Type::NORMAL][Type::SPECTRE] = 0.0;
+    tableEfficacite[Type::COMBAT][Type::SPECTRE] = 0.0;
+    tableEfficacite[Type::POISON][Type::SPECTRE] = 0.5;
+    tableEfficacite[Type::INSECTE][Type::SPECTRE] = 0.5;
+    tableEfficacite[Type::SPECTRE][Type::SPECTRE] = 2.0;
+    tableEfficacite[Type::TENEBRES][Type::SPECTRE] = 2.0;
+
+    // Vol défensif
+    tableEfficacite[Type::PLANTE][Type::VOL] = 0.5;
+    tableEfficacite[Type::ELECTRIK][Type::VOL] = 2.0;
+    tableEfficacite[Type::GLACE][Type::VOL] = 2.0;
+    tableEfficacite[Type::COMBAT][Type::VOL] = 0.5;
+    tableEfficacite[Type::SOL][Type::VOL] = 0.0;
+    tableEfficacite[Type::INSECTE][Type::VOL] = 0.5;
+    tableEfficacite[Type::ROCHE][Type::VOL] = 2.0;
 }
 
 Pokemon::Pokemon(const std::string& nom, const std::vector<Type>& types, int hp, 
