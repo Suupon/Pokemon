@@ -1,7 +1,7 @@
 #include "Combat.hpp"
 #include <iostream>
 
-Combat::ResultatAttaque Combat::calculerDegats(const Pokemon& attaquant, Pokemon& cible) {
+Combat::ResultatAttaque Combat::calculerDegats(const Pokemon& attaquant, Pokemon& cible, bool estMaitre) {
     ResultatAttaque resultat;
     resultat.degatsBase = attaquant.getDegatsAttaque();
     
@@ -24,6 +24,11 @@ Combat::ResultatAttaque Combat::calculerDegats(const Pokemon& attaquant, Pokemon
         resultat.multiplicateur *= Pokemon::MULTIPLICATEUR_CRITIQUE;
     }
     
+    // Appliquer le bonus de dégâts pour les Maîtres
+    if (estMaitre) {
+        resultat.multiplicateur *= BONUS_DEGATS_MAITRE;
+    }
+    
     // Calcul des dégâts finaux
     resultat.degatsFinaux = static_cast<int>(resultat.degatsBase * resultat.multiplicateur);
     
@@ -33,8 +38,12 @@ Combat::ResultatAttaque Combat::calculerDegats(const Pokemon& attaquant, Pokemon
     return resultat;
 }
 
-void Combat::afficherAttaque(const std::string& nomAttaquant, const std::string& nomAttaque, int degatsBase) {
-    std::cout << "\n" << nomAttaquant << " utilise " << nomAttaque << " ! (Dégâts de base : " << degatsBase << ")" << std::endl;
+void Combat::afficherAttaque(const std::string& nomAttaquant, const std::string& nomAttaque, int degatsBase, bool estMaitre) {
+    std::cout << "\n" << nomAttaquant << " utilise " << nomAttaque << " ! (Dégâts de base : " << degatsBase << ")";
+    if (estMaitre) {
+        std::cout << " [BONUS MAÎTRE +" << static_cast<int>((BONUS_DEGATS_MAITRE - 1.0) * 100) << "%]";
+    }
+    std::cout << std::endl;
 }
 
 void Combat::afficherResultat(const ResultatAttaque& resultat, const Pokemon& cible) {

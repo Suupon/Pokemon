@@ -164,7 +164,8 @@ std::vector<Leader*> DataLoader::chargerLeaders(const std::string& fichier) {
     return leaders;
 }
 
-Maitre* DataLoader::chargerMaitre(const std::string& fichier) {
+std::vector<Maitre*> DataLoader::chargerMaitres(const std::string& fichier) {
+    std::vector<Maitre*> maitres;
     std::ifstream file(fichier);
     if (!file.is_open()) {
         throw std::runtime_error("Impossible d'ouvrir le fichier: " + fichier);
@@ -174,7 +175,7 @@ Maitre* DataLoader::chargerMaitre(const std::string& fichier) {
     // Ignorer l'en-tête
     std::getline(file, ligne);
     
-    if (std::getline(file, ligne)) {
+    while (std::getline(file, ligne)) {
         auto donnees = splitLine(ligne, ',');
         if (donnees.size() >= 2) { // Au moins le nom et un Pokémon
             std::vector<Pokemon*> pokemons;
@@ -184,10 +185,15 @@ Maitre* DataLoader::chargerMaitre(const std::string& fichier) {
                     pokemons.push_back(pokemon);
                 }
             }
-            return new Maitre(donnees[0], pokemons, "Maître Pokémon");
+            maitres.push_back(new Maitre(donnees[0], pokemons, "Maître Pokémon"));
         }
     }
-    throw std::runtime_error("Format de fichier maître invalide");
+    
+    if (maitres.empty()) {
+        throw std::runtime_error("Format de fichier maître invalide ou fichier vide");
+    }
+    
+    return maitres;
 }
 
 std::vector<std::string> DataLoader::splitLine(const std::string& ligne, char delimiteur) {

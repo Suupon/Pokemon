@@ -9,6 +9,7 @@
 #include <chrono>
 #include <sstream>
 #include <set>
+#include <ctime>
 
 void afficherMenu() {
     std::cout << "\n=== Menu Principal ===" << std::endl;
@@ -16,7 +17,7 @@ void afficherMenu() {
     std::cout << "2. Soigner mes Pokémon" << std::endl;
     std::cout << "3. Afficher mes stats" << std::endl;
     std::cout << "4. Défier un Leader" << std::endl;
-    std::cout << "5. Défier le Maître" << std::endl;
+    std::cout << "5. Défier un Maître" << std::endl;
     std::cout << "6. Interagir avec les Pokémon/Entraîneurs" << std::endl;
     std::cout << "7. Gérer l'ordre des Pokémon" << std::endl;
     std::cout << "8. Quitter" << std::endl;
@@ -80,9 +81,15 @@ public:
 bool combat(Joueur* joueur, Entraineur* adversaire) {
     std::cout << "\n=== PRÉPARATION DU COMBAT ===" << std::endl;
     
-    // Vérifier l'état des 3 premiers Pokémon du joueur
+    // Déterminer si l'adversaire est un Maître
+    bool estMaitre = adversaire->estMaitre();
+    
+    // Nombre de Pokémon pour le combat
+    int nombrePokemonCombat = estMaitre ? 6 : 3;
+    
+    // Vérifier l'état des Pokémon du joueur pour le combat
     const auto& tousLesPokemonJoueur = joueur->getPokemons();
-    for (size_t i = 0; i < 3 && i < tousLesPokemonJoueur.size(); ++i) {
+    for (size_t i = 0; i < nombrePokemonCombat && i < tousLesPokemonJoueur.size(); ++i) {
         if (tousLesPokemonJoueur[i]->getCurrentHp() <= 0) {
             std::cout << "Attention ! " << tousLesPokemonJoueur[i]->getNom() 
                      << " est K.O. et ne peut pas combattre !" << std::endl;
@@ -91,17 +98,23 @@ bool combat(Joueur* joueur, Entraineur* adversaire) {
         }
     }
     
-    // Utiliser automatiquement les 3 premiers Pokémon du joueur
+    // Si c'est un combat contre un Maître, vérifier que le joueur a au moins 6 Pokémon
+    if (estMaitre && tousLesPokemonJoueur.size() < 6) {
+        std::cout << "Pour défier un Maître, vous devez avoir au moins 6 Pokémon dans votre équipe !" << std::endl;
+        std::cout << "Vous n'avez que " << tousLesPokemonJoueur.size() << " Pokémon." << std::endl;
+        return false;
+    }
+    
+    // Sélectionner les Pokémon du joueur pour le combat
     std::vector<Pokemon*> equipeJoueur;
-    for (size_t i = 0; i < 3 && i < tousLesPokemonJoueur.size(); ++i) {
+    for (size_t i = 0; i < nombrePokemonCombat && i < tousLesPokemonJoueur.size(); ++i) {
         equipeJoueur.push_back(tousLesPokemonJoueur[i]);
     }
     
+    // Sélectionner les Pokémon de l'adversaire pour le combat
     std::vector<Pokemon*> equipeAdversaire;
-    
-    // Sélectionner les 3 premiers Pokémon de l'adversaire
     const std::vector<Pokemon*>& tousLesPokemonAdversaire = adversaire->getPokemons();
-    for (size_t i = 0; i < 3 && i < tousLesPokemonAdversaire.size(); ++i) {
+    for (size_t i = 0; i < nombrePokemonCombat && i < tousLesPokemonAdversaire.size(); ++i) {
         equipeAdversaire.push_back(tousLesPokemonAdversaire[i]);
     }
 
@@ -149,8 +162,8 @@ bool combat(Joueur* joueur, Entraineur* adversaire) {
         pause();
 
         // Attaque du joueur
-        Combat::afficherAttaque(pokemonJoueur->getNom(), pokemonJoueur->getNomAttaque(), pokemonJoueur->getDegatsAttaque());
-        auto resultat = Combat::calculerDegats(*pokemonJoueur, *pokemonAdversaire);
+        Combat::afficherAttaque(pokemonJoueur->getNom(), pokemonJoueur->getNomAttaque(), pokemonJoueur->getDegatsAttaque(), false);
+        auto resultat = Combat::calculerDegats(*pokemonJoueur, *pokemonAdversaire, false);
         Combat::afficherResultat(resultat, *pokemonAdversaire);
         pause();
 
@@ -161,9 +174,9 @@ bool combat(Joueur* joueur, Entraineur* adversaire) {
             continue;
         }
 
-        // Attaque de l'adversaire
-        Combat::afficherAttaque(pokemonAdversaire->getNom(), pokemonAdversaire->getNomAttaque(), pokemonAdversaire->getDegatsAttaque());
-        resultat = Combat::calculerDegats(*pokemonAdversaire, *pokemonJoueur);
+        // Attaque de l'adversaire (avec bonus si c'est un Maître)
+        Combat::afficherAttaque(pokemonAdversaire->getNom(), pokemonAdversaire->getNomAttaque(), pokemonAdversaire->getDegatsAttaque(), estMaitre);
+        resultat = Combat::calculerDegats(*pokemonAdversaire, *pokemonJoueur, estMaitre);
         Combat::afficherResultat(resultat, *pokemonJoueur);
         pause();
 
@@ -277,15 +290,15 @@ void soignerPokemonSpecifique(Joueur* joueur) {
     }
 }
 
-void interagirAvecPokemonEtEntraineurs(Joueur* joueur, const Maitre* maitre, const std::vector<Leader*>& leaders) {
+void interagirAvecPokemonEtEntraineurs(Joueur* joueur, const Maitre* maitreCourant, const std::vector<Leader*>& leaders) {
     bool continuerInteraction = true;
     
     while (continuerInteraction) {
         std::cout << "\n=== Menu d'Interaction ===" << std::endl;
         std::cout << "1. Interagir avec mes Pokémon" << std::endl;
         std::cout << "2. Interagir avec les Leaders vaincus" << std::endl;
-        if (joueur->getBadges() >= leaders.size()) {
-            std::cout << "3. Interagir avec le Maître" << std::endl;
+        if (joueur->getBadges() >= leaders.size() && maitreCourant != nullptr) {
+            std::cout << "3. Interagir avec un Maître" << std::endl;
         }
         std::cout << "0. Retour" << std::endl;
         std::cout << "Votre choix : ";
@@ -347,8 +360,8 @@ void interagirAvecPokemonEtEntraineurs(Joueur* joueur, const Maitre* maitre, con
                 break;
             }
             case 3: {
-                if (joueur->getBadges() >= leaders.size() && maitre != nullptr) {
-                    std::cout << maitre->interagir() << std::endl;
+                if (joueur->getBadges() >= leaders.size() && maitreCourant != nullptr) {
+                    std::cout << maitreCourant->interagir() << std::endl;
                     pause(2000);
                 }
                 break;
@@ -407,24 +420,25 @@ void gererOrdrePokemon(Joueur* joueur) {
 int main() {
     Joueur* joueur = nullptr;
     std::vector<Leader*> leaders;
-    Maitre* maitre = nullptr;
+    std::vector<Maitre*> maitres;
+    Maitre* maitreCourant = nullptr; // Le maître actuellement sélectionné pour le combat
 
     try {
         std::cout << "Chargement des Pokémon..." << std::endl;
         // Charger d'abord tous les Pokémon disponibles
-        DataLoader::chargerPokemons("data/pokemon.csv");
+        DataLoader::chargerPokemons("../data/pokemon.csv");
         
         std::cout << "Chargement du joueur..." << std::endl;
         // Charger le joueur avec ses Pokémon
-        joueur = DataLoader::chargerJoueur("data/joueur.csv");
+        joueur = DataLoader::chargerJoueur("../data/joueur.csv");
         
         std::cout << "Chargement des Leaders..." << std::endl;
         // Charger les Leaders
-        leaders = DataLoader::chargerLeaders("data/leaders.csv");
+        leaders = DataLoader::chargerLeaders("../data/leaders.csv");
         
-        std::cout << "Chargement du Maître..." << std::endl;
-        // Charger le Maître
-        maitre = DataLoader::chargerMaitre("data/maitres.csv");
+        std::cout << "Chargement des Maîtres..." << std::endl;
+        // Charger les Maîtres
+        maitres = DataLoader::chargerMaitres("../data/maitres.csv");
 
         std::cout << "Chargement terminé !" << std::endl;
 
@@ -485,7 +499,8 @@ int main() {
                                 leader->soignerEquipe();
                             } else if (resultatCombat == false) {
                                 // Si le combat n'a pas pu commencer à cause d'un Pokémon K.O.
-                                pause(2000);
+                                // Aucune action supplémentaire requise, le message est déjà affiché
+                                // dans la fonction combat
                             } else {
                                 std::cout << "Vous avez perdu contre " << leader->getNom() << "." << std::endl;
                                 joueur->perdreCombat();
@@ -504,25 +519,46 @@ int main() {
             case 5: // Défier Maître
                 if (joueur->getBadges() < leaders.size()) {
                     std::cout << "Vous devez avoir vaincu tous les Leaders (" 
-                             << leaders.size() << " badges) pour défier le Maître !" << std::endl;
+                             << leaders.size() << " badges) pour défier un Maître !" << std::endl;
+                    pause();
+                } else if (maitres.empty()) {
+                    std::cout << "Aucun Maître disponible." << std::endl;
                     pause();
                 } else {
-                    std::cout << maitre->interagir() << std::endl;
+                    // Sélectionner un Maître aléatoirement
+                    srand(time(nullptr));
+                    int indexMaitre = rand() % maitres.size();
+                    maitreCourant = maitres[indexMaitre];
+                    
+                    std::cout << "Vous allez défier " << maitreCourant->getNom() << ", " 
+                             << maitreCourant->getTitre() << " !" << std::endl;
+                    std::cout << "\nATTENTION : Les Maîtres bénéficient d'un bonus de dégâts de " 
+                             << static_cast<int>((Combat::BONUS_DEGATS_MAITRE - 1.0) * 100) << "% !" << std::endl;
+                    std::cout << "De plus, ce combat se fera avec 6 Pokémon contre 6 !" << std::endl;
                     pause();
                     
-                    if (combat(joueur, maitre)) {
-                        std::cout << "Félicitations ! Vous avez battu le Maître Pokémon !" << std::endl;
+                    bool resultatCombat = combat(joueur, maitreCourant);
+                    if (resultatCombat) {
+                        std::cout << "Félicitations ! Vous avez battu " << maitreCourant->getNom() 
+                                 << ", le " << maitreCourant->getTitre() << " !" << std::endl;
                         joueur->gagnerCombat();
-                        maitre->incrementerVictoires();
+                        maitreCourant->incrementerVictoires();
+                    } else if (resultatCombat == false) {
+                        // Si le combat n'a pas pu commencer à cause d'un Pokémon K.O.
+                        // Aucune action supplémentaire requise, le message est déjà affiché
+                        // dans la fonction combat
                     } else {
-                        std::cout << "Vous avez perdu contre le Maître." << std::endl;
+                        std::cout << "Vous avez perdu contre " << maitreCourant->getNom() << "." << std::endl;
                         joueur->perdreCombat();
                     }
+                    
+                    // Soigner l'équipe du Maître après le combat
+                    maitreCourant->soignerEquipe();
                 }
                 break;
 
             case 6: // Interagir
-                interagirAvecPokemonEtEntraineurs(joueur, maitre, leaders);
+                interagirAvecPokemonEtEntraineurs(joueur, maitreCourant, leaders);
                 break;
 
             case 7: // Gérer l'ordre des Pokémon
@@ -546,11 +582,15 @@ int main() {
         joueur = nullptr;
     }
     
-    if (maitre != nullptr) {
-        delete maitre;
-        maitre = nullptr;
+    // Nettoyer les maîtres
+    for (Maitre* m : maitres) {
+        if (m != nullptr) {
+            delete m;
+        }
     }
+    maitres.clear();
     
+    // Nettoyer les leaders
     for (Leader* leader : leaders) {
         if (leader != nullptr) {
             delete leader;

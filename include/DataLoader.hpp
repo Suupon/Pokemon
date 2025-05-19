@@ -25,7 +25,7 @@ public:
     static std::vector<Pokemon*> chargerPokemons(const std::string& fichier);
     static Joueur* chargerJoueur(const std::string& fichier);
     static std::vector<Leader*> chargerLeaders(const std::string& fichier);
-    static Maitre* chargerMaitre(const std::string& fichier);
+    static std::vector<Maitre*> chargerMaitres(const std::string& fichier);
     
     // Nettoyage du cache
     static void nettoyerCache();
