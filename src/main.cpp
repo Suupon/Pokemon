@@ -10,6 +10,7 @@
 #include <sstream>
 #include <set>
 #include <ctime>
+#include <random>
 
 void afficherMenu() {
     std::cout << "\n=== Menu Principal ===" << std::endl;
@@ -18,9 +19,11 @@ void afficherMenu() {
     std::cout << "3. Afficher mes stats" << std::endl;
     std::cout << "4. Défier un Leader" << std::endl;
     std::cout << "5. Défier un Maître" << std::endl;
-    std::cout << "6. Interagir avec les Pokémon/Entraîneurs" << std::endl;
-    std::cout << "7. Gérer l'ordre des Pokémon" << std::endl;
-    std::cout << "8. Quitter" << std::endl;
+    std::cout << "6. Défier un autre dresseur" << std::endl;
+    std::cout << "7. Interagir avec les Pokémon/Entraîneurs" << std::endl;
+    std::cout << "8. Gérer l'ordre des Pokémon" << std::endl;
+    std::cout << "9. Changer de dresseur" << std::endl;
+    std::cout << "0. Quitter" << std::endl;
     std::cout << "Votre choix : ";
 }
 
@@ -263,42 +266,69 @@ void soignerPokemonSpecifique(Joueur* joueur) {
         return;
     }
 
-    std::cout << "\nChoisissez un Pokémon à soigner :" << std::endl;
-    
-    // Afficher uniquement les Pokémon blessés
+    // Afficher les Pokémon blessés
+    std::cout << "\nVos Pokémon blessés :" << std::endl;
+    int compteurBlesses = 0;
     for (size_t i = 0; i < pokemons.size(); ++i) {
         if (pokemons[i]->getCurrentHp() < pokemons[i]->getMaxHp()) {
             std::cout << i + 1 << ". " << pokemons[i]->getNom() 
                       << " (PV: " << pokemons[i]->getCurrentHp() << "/" << pokemons[i]->getMaxHp() << ")" 
                       << std::endl;
+            compteurBlesses++;
         }
     }
     
+    std::cout << "\nQue souhaitez-vous faire ?" << std::endl;
+    std::cout << "1. Soigner un Pokémon spécifique" << std::endl;
+    std::cout << "2. Soigner tous les Pokémon" << std::endl;
     std::cout << "0. Annuler" << std::endl;
     std::cout << "\nVotre choix : ";
-    int choix = lireChoix();
     
-    if (choix > 0 && choix <= static_cast<int>(pokemons.size())) {
-        Pokemon* pokemon = pokemons[choix - 1];
-        if (pokemon->getCurrentHp() < pokemon->getMaxHp()) {
-            pokemon->soigner();
-            std::cout << pokemon->getNom() << " a été soigné !" << std::endl;
-        } else {
-            std::cout << pokemon->getNom() << " est déjà en pleine forme !" << std::endl;
+    int choixAction = lireChoix();
+    
+    if (choixAction == 1) {
+        // Soigner un Pokémon spécifique
+        std::cout << "\nChoisissez un Pokémon à soigner (1-" << pokemons.size() << ") ou 0 pour annuler : ";
+        int choix = lireChoix();
+        
+        if (choix > 0 && choix <= static_cast<int>(pokemons.size())) {
+            Pokemon* pokemon = pokemons[choix - 1];
+            if (pokemon->getCurrentHp() < pokemon->getMaxHp()) {
+                pokemon->soigner();
+                std::cout << pokemon->getNom() << " a été soigné !" << std::endl;
+            } else {
+                std::cout << pokemon->getNom() << " est déjà en pleine forme !" << std::endl;
+            }
         }
-        pause();
+    } else if (choixAction == 2) {
+        // Soigner tous les Pokémon
+        int nombrePokemonsSoignes = 0;
+        for (auto& pokemon : pokemons) {
+            if (pokemon->getCurrentHp() < pokemon->getMaxHp()) {
+                pokemon->soigner();
+                nombrePokemonsSoignes++;
+            }
+        }
+        
+        if (nombrePokemonsSoignes > 0) {
+            std::cout << "Tous vos Pokémon blessés (" << nombrePokemonsSoignes << ") ont été soignés !" << std::endl;
+        } else {
+            std::cout << "Aucun Pokémon n'avait besoin de soins !" << std::endl;
+        }
     }
+    
+    pause();
 }
 
-void interagirAvecPokemonEtEntraineurs(Joueur* joueur, const Maitre* maitreCourant, const std::vector<Leader*>& leaders) {
+void interagirAvecPokemonEtEntraineurs(Joueur* joueur, const Maitre* maitreCourant, const std::vector<Leader*>& leaders, const std::vector<Maitre*>& maitres) {
     bool continuerInteraction = true;
     
     while (continuerInteraction) {
         std::cout << "\n=== Menu d'Interaction ===" << std::endl;
         std::cout << "1. Interagir avec mes Pokémon" << std::endl;
         std::cout << "2. Interagir avec les Leaders vaincus" << std::endl;
-        if (joueur->getBadges() >= leaders.size() && maitreCourant != nullptr) {
-            std::cout << "3. Interagir avec un Maître" << std::endl;
+        if (joueur->getBadges() >= leaders.size() && !maitres.empty()) {
+            std::cout << "3. Interagir avec les Maîtres" << std::endl;
         }
         std::cout << "0. Retour" << std::endl;
         std::cout << "Votre choix : ";
@@ -360,14 +390,45 @@ void interagirAvecPokemonEtEntraineurs(Joueur* joueur, const Maitre* maitreCoura
                 break;
             }
             case 3: {
-                if (joueur->getBadges() >= leaders.size() && maitreCourant != nullptr) {
-                    std::cout << maitreCourant->interagir() << std::endl;
-                    pause(2000);
+                if (joueur->getBadges() >= leaders.size() && !maitres.empty()) {
+                    // Créer une liste des Maîtres vaincus
+                    std::vector<Maitre*> maitresVaincus;
+                    for (Maitre* maitre : maitres) {
+                        if (maitre->aEteVaincu()) {
+                            maitresVaincus.push_back(maitre);
+                        }
+                    }
+                    
+                    if (maitresVaincus.empty()) {
+                        std::cout << "Vous n'avez pas encore vaincu de Maître." << std::endl;
+                        pause();
+                    } else {
+                        bool choisirMaitre = true;
+                        while (choisirMaitre) {
+                            std::cout << "\nChoisissez un Maître vaincu pour interagir (0 pour revenir) :" << std::endl;
+                            for (size_t i = 0; i < maitresVaincus.size(); ++i) {
+                                std::cout << i+1 << ". " << maitresVaincus[i]->getNom() << ", " << maitresVaincus[i]->getTitre() << std::endl;
+                            }
+                            
+                            int choixMaitre = lireChoix();
+                            if (choixMaitre == 0) {
+                                choisirMaitre = false;
+                            } else if (choixMaitre >= 1 && choixMaitre <= static_cast<int>(maitresVaincus.size())) {
+                                Maitre* maitre = maitresVaincus[choixMaitre-1];
+                                std::cout << maitre->interagir() << std::endl;
+                                pause(2000);
+                                choisirMaitre = false;
+                            } else {
+                                std::cout << "Choix invalide !" << std::endl;
+                                pause();
+                            }
+                        }
+                    }
                 }
                 break;
             }
             default:
-                std::cout << "Choix invalide !" << std::endl;
+                std::cout << "Choix invalide ! Veuillez choisir entre 0 et 9." << std::endl;
                 pause();
                 break;
         }
@@ -414,6 +475,170 @@ void gererOrdrePokemon(Joueur* joueur) {
             std::cout << "Choix invalide ! Veuillez choisir 1 pour échanger ou 0 pour revenir." << std::endl;
             pause();
         }
+    }
+}
+
+// Fonction pour défier un autre dresseur
+void defierAutreDresseur(Joueur* joueurPrincipal, const std::string& fichierJoueurs) {
+    // Charger tous les joueurs du fichier
+    std::vector<Joueur*> autreDresseurs;
+    try {
+        autreDresseurs = DataLoader::chargerTousJoueurs(fichierJoueurs);
+    } catch (const std::exception& e) {
+        std::cerr << "Erreur lors du chargement des dresseurs : " << e.what() << std::endl;
+        pause();
+        return;
+    }
+    
+    // Filtrer pour ne pas inclure le joueur principal
+    std::vector<Joueur*> dresseursFiltres;
+    for (Joueur* dresseur : autreDresseurs) {
+        if (dresseur->getNom() != joueurPrincipal->getNom()) {
+            dresseursFiltres.push_back(dresseur);
+        } else {
+            delete dresseur; // On supprime la copie du joueur principal
+        }
+    }
+    
+    if (dresseursFiltres.empty()) {
+        std::cout << "Aucun autre dresseur disponible pour le combat." << std::endl;
+        pause();
+        return;
+    }
+    
+    // Afficher la liste des dresseurs disponibles
+    bool continuer = true;
+    while (continuer) {
+        std::cout << "\n=== Dresseurs disponibles ===" << std::endl;
+        for (size_t i = 0; i < dresseursFiltres.size(); ++i) {
+            std::cout << i + 1 << ". " << dresseursFiltres[i]->getNom() << std::endl;
+        }
+        std::cout << "0. Retour" << std::endl;
+        std::cout << "Choisissez un dresseur à défier : ";
+        
+        int choix = lireChoix();
+        if (choix == 0) {
+            continuer = false;
+        } else if (choix > 0 && choix <= static_cast<int>(dresseursFiltres.size())) {
+            Joueur* adversaire = dresseursFiltres[choix - 1];
+            
+            std::cout << "\nVous allez affronter " << adversaire->getNom() << " !" << std::endl;
+            pause();
+            
+            bool resultatCombat = combat(joueurPrincipal, adversaire);
+            if (resultatCombat) {
+                std::cout << "Félicitations ! Vous avez battu " << adversaire->getNom() << " !" << std::endl;
+                joueurPrincipal->gagnerCombat();
+            } else if (resultatCombat == false) {
+                // Si le combat n'a pas pu commencer à cause d'un Pokémon K.O.
+                // Aucune action supplémentaire requise, le message est déjà affiché
+                // dans la fonction combat
+            } else {
+                std::cout << "Vous avez perdu contre " << adversaire->getNom() << "." << std::endl;
+                joueurPrincipal->perdreCombat();
+            }
+            
+            // Soigner l'équipe de l'adversaire après le combat
+            adversaire->soignerEquipe();
+            
+            continuer = false;
+        } else {
+            std::cout << "Choix invalide !" << std::endl;
+            pause();
+        }
+    }
+    
+    // Nettoyer la mémoire
+    for (Joueur* dresseur : dresseursFiltres) {
+        delete dresseur;
+    }
+    dresseursFiltres.clear();
+}
+
+// Fonction pour changer de dresseur
+Joueur* changerDresseur(Joueur* joueurActuel, const std::string& fichierJoueurs) {
+    // Charger tous les joueurs du fichier
+    std::vector<Joueur*> tousJoueurs;
+    try {
+        tousJoueurs = DataLoader::chargerTousJoueurs(fichierJoueurs);
+    } catch (const std::exception& e) {
+        std::cerr << "Erreur lors du chargement des dresseurs : " << e.what() << std::endl;
+        pause();
+        return joueurActuel;
+    }
+    
+    if (tousJoueurs.empty()) {
+        std::cout << "Aucun dresseur disponible." << std::endl;
+        pause();
+        return joueurActuel;
+    }
+    
+    // Afficher la liste des dresseurs disponibles
+    std::cout << "\n=== Sélection du dresseur ===" << std::endl;
+    std::cout << "Dresseur actuel : " << joueurActuel->getNom() << std::endl;
+    std::cout << "\nDresseurs disponibles :" << std::endl;
+    
+    for (size_t i = 0; i < tousJoueurs.size(); ++i) {
+        std::string marqueur = (tousJoueurs[i]->getNom() == joueurActuel->getNom()) ? " [Actuel]" : "";
+        std::cout << i + 1 << ". " << tousJoueurs[i]->getNom() << marqueur << std::endl;
+    }
+    
+    std::cout << "0. Annuler" << std::endl;
+    std::cout << "Choisissez un dresseur : ";
+    
+    int choix = lireChoix();
+    if (choix == 0) {
+        // Libérer la mémoire des autres joueurs
+        for (Joueur* j : tousJoueurs) {
+            if (j->getNom() != joueurActuel->getNom()) {
+                delete j;
+            }
+        }
+        return joueurActuel;
+    } else if (choix > 0 && choix <= static_cast<int>(tousJoueurs.size())) {
+        Joueur* nouveauJoueur = tousJoueurs[choix - 1];
+        
+        // Si le joueur a choisi un dresseur différent
+        if (nouveauJoueur->getNom() != joueurActuel->getNom()) {
+            std::cout << "Vous jouez maintenant avec " << nouveauJoueur->getNom() << " !" << std::endl;
+            
+            // Supprimer l'ancien joueur mais garder le nouveau
+            for (Joueur* j : tousJoueurs) {
+                if (j->getNom() != nouveauJoueur->getNom()) {
+                    delete j;
+                }
+            }
+            
+            // Supprimer l'ancien joueur
+            delete joueurActuel;
+            
+            pause();
+            return nouveauJoueur;
+        } else {
+            std::cout << "Vous jouez déjà avec " << joueurActuel->getNom() << "." << std::endl;
+            
+            // Libérer la mémoire des autres joueurs
+            for (Joueur* j : tousJoueurs) {
+                if (j != joueurActuel) {
+                    delete j;
+                }
+            }
+            
+            pause();
+            return joueurActuel;
+        }
+    } else {
+        std::cout << "Choix invalide !" << std::endl;
+        
+        // Libérer la mémoire de tous les joueurs sauf l'actuel
+        for (Joueur* j : tousJoueurs) {
+            if (j->getNom() != joueurActuel->getNom()) {
+                delete j;
+            }
+        }
+        
+        pause();
+        return joueurActuel;
     }
 }
 
@@ -525,9 +750,12 @@ int main() {
                     std::cout << "Aucun Maître disponible." << std::endl;
                     pause();
                 } else {
-                    // Sélectionner un Maître aléatoirement
-                    srand(time(nullptr));
-                    int indexMaitre = rand() % maitres.size();
+                    // Sélectionner un Maître aléatoirement à chaque défi
+                    // Initialiser le générateur avec une nouvelle seed à chaque appel
+                    std::random_device rd;  // Seed plus robuste qu'un time(nullptr)
+                    std::mt19937 gen(rd());
+                    std::uniform_int_distribution<> dist(0, maitres.size() - 1);
+                    int indexMaitre = dist(gen);
                     maitreCourant = maitres[indexMaitre];
                     
                     std::cout << "Vous allez défier " << maitreCourant->getNom() << ", " 
@@ -543,6 +771,7 @@ int main() {
                                  << ", le " << maitreCourant->getTitre() << " !" << std::endl;
                         joueur->gagnerCombat();
                         maitreCourant->incrementerVictoires();
+                        maitreCourant->setVaincu(true); // Marquer le maître comme vaincu
                     } else if (resultatCombat == false) {
                         // Si le combat n'a pas pu commencer à cause d'un Pokémon K.O.
                         // Aucune action supplémentaire requise, le message est déjà affiché
@@ -557,21 +786,29 @@ int main() {
                 }
                 break;
 
-            case 6: // Interagir
-                interagirAvecPokemonEtEntraineurs(joueur, maitreCourant, leaders);
+            case 6: // Défier un autre dresseur
+                defierAutreDresseur(joueur, "../data/joueur.csv");
                 break;
 
-            case 7: // Gérer l'ordre des Pokémon
+            case 7: // Interagir
+                interagirAvecPokemonEtEntraineurs(joueur, maitreCourant, leaders, maitres);
+                break;
+
+            case 8: // Gérer l'ordre des Pokémon
                 gererOrdrePokemon(joueur);
                 break;
 
-            case 8: // Quitter
+            case 9: // Changer de dresseur
+                joueur = changerDresseur(joueur, "../data/joueur.csv");
+                break;
+
+            case 0: // Quitter
                 std::cout << "Au revoir !" << std::endl;
                 continuer = false;
                 break;
 
             default:
-                std::cout << "Choix invalide ! Veuillez choisir entre 1 et 8." << std::endl;
+                std::cout << "Choix invalide ! Veuillez choisir entre 0 et 9." << std::endl;
         }
     }
 

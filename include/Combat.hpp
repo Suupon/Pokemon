@@ -13,9 +13,11 @@ public:
     struct ResultatAttaque {
         int degatsBase;
         int degatsFinaux;
-        double multiplicateur;
+        double multiplicateur;      // Multiplicateur final (incluant type, critique, bonus maître)
+        double multiplicateurType;  // Multiplicateur de type uniquement
         bool estCritique;
         bool estImmunise;
+        bool estMaitre;            // Indique si le bonus maître a été appliqué
     };
 
     // Méthodes pour gérer le combat

@@ -26,7 +26,13 @@ Combat::ResultatAttaque Combat::calculerDegats(const Pokemon& attaquant, Pokemon
     
     // Appliquer le bonus de dégâts pour les Maîtres
     if (estMaitre) {
+        // Stocker le multiplicateur original avant d'appliquer le bonus du Maître
+        resultat.multiplicateurType = resultat.multiplicateur;
         resultat.multiplicateur *= BONUS_DEGATS_MAITRE;
+        resultat.estMaitre = true;
+    } else {
+        resultat.multiplicateurType = resultat.multiplicateur;
+        resultat.estMaitre = false;
     }
     
     // Calcul des dégâts finaux
@@ -55,8 +61,10 @@ void Combat::afficherResultat(const ResultatAttaque& resultat, const Pokemon& ci
     if (resultat.estCritique) {
         std::cout << "Coup critique !" << std::endl;
     } else {
-        // Afficher le message d'efficacité uniquement si ce n'est pas un coup critique
-        afficherEfficacite(resultat.multiplicateur);
+        // Afficher le message d'efficacité uniquement s'il n'y a pas de bonus Maître ou si l'efficacité n'est pas neutre
+        if (!resultat.estMaitre || (resultat.multiplicateurType != 1.0)) {
+            afficherEfficacite(resultat.multiplicateurType);
+        }
     }
     
     std::cout << "\n→ L'attaque inflige " << resultat.degatsFinaux << " dégâts" << std::endl;

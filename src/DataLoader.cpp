@@ -87,7 +87,7 @@ std::vector<Pokemon*> DataLoader::chargerPokemons(const std::string& fichier) {
     return pokemons;
 }
 
-Joueur* DataLoader::chargerJoueur(const std::string& fichier) {
+Joueur* DataLoader::chargerJoueur(const std::string& fichier, const std::string& nomJoueur) {
     std::ifstream file(fichier);
     if (!file.is_open()) {
         throw std::runtime_error("Impossible d'ouvrir le fichier: " + fichier);
@@ -97,9 +97,14 @@ Joueur* DataLoader::chargerJoueur(const std::string& fichier) {
     // Ignorer l'en-tête
     std::getline(file, ligne);
     
-    if (std::getline(file, ligne)) {
+    while (std::getline(file, ligne)) {
         auto donnees = splitLine(ligne, ',');
         if (donnees.size() >= 2) { // Au moins le nom et un Pokémon
+            // Si un nom de joueur spécifique est demandé, vérifier que c'est le bon
+            if (!nomJoueur.empty() && donnees[0] != nomJoueur) {
+                continue; // Ce n'est pas le joueur recherché, continuer la recherche
+            }
+            
             Joueur* joueur = new Joueur(donnees[0]);
             
             // Ajouter les Pokémon
@@ -112,7 +117,41 @@ Joueur* DataLoader::chargerJoueur(const std::string& fichier) {
             return joueur;
         }
     }
-    throw std::runtime_error("Format de fichier joueur invalide");
+    throw std::runtime_error("Format de fichier joueur invalide ou joueur non trouvé");
+}
+
+std::vector<Joueur*> DataLoader::chargerTousJoueurs(const std::string& fichier) {
+    std::vector<Joueur*> joueurs;
+    std::ifstream file(fichier);
+    if (!file.is_open()) {
+        throw std::runtime_error("Impossible d'ouvrir le fichier: " + fichier);
+    }
+
+    std::string ligne;
+    // Ignorer l'en-tête
+    std::getline(file, ligne);
+    
+    while (std::getline(file, ligne)) {
+        auto donnees = splitLine(ligne, ',');
+        if (donnees.size() >= 2) { // Au moins le nom et un Pokémon
+            Joueur* joueur = new Joueur(donnees[0]);
+            
+            // Ajouter les Pokémon
+            for (size_t i = 1; i < donnees.size() && !donnees[i].empty(); ++i) {
+                Pokemon* pokemon = getPokemonFromCache(donnees[i]);
+                if (pokemon) {
+                    joueur->ajouterPokemon(pokemon);
+                }
+            }
+            joueurs.push_back(joueur);
+        }
+    }
+    
+    if (joueurs.empty()) {
+        throw std::runtime_error("Format de fichier joueur invalide ou fichier vide");
+    }
+    
+    return joueurs;
 }
 
 std::vector<Leader*> DataLoader::chargerLeaders(const std::string& fichier) {
@@ -185,7 +224,7 @@ std::vector<Maitre*> DataLoader::chargerMaitres(const std::string& fichier) {
                     pokemons.push_back(pokemon);
                 }
             }
-            maitres.push_back(new Maitre(donnees[0], pokemons, "Maître Pokémon"));
+            maitres.push_back(new Maitre(donnees[0], pokemons, "Maître Pokémon", 0, false));
         }
     }
     

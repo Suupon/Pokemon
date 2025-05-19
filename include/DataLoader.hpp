@@ -23,7 +23,8 @@ private:
 public:
     // Chargement des données
     static std::vector<Pokemon*> chargerPokemons(const std::string& fichier);
-    static Joueur* chargerJoueur(const std::string& fichier);
+    static Joueur* chargerJoueur(const std::string& fichier, const std::string& nomJoueur = "");
+    static std::vector<Joueur*> chargerTousJoueurs(const std::string& fichier);
     static std::vector<Leader*> chargerLeaders(const std::string& fichier);
     static std::vector<Maitre*> chargerMaitres(const std::string& fichier);
     
