@@ -1,0 +1,3 @@
+/Users/aymen/Desktop/Pokemon/build/CMakeFiles/PokemonBattle.dir
+/Users/aymen/Desktop/Pokemon/build/CMakeFiles/edit_cache.dir
+/Users/aymen/Desktop/Pokemon/build/CMakeFiles/rebuild_cache.dir
