@@ -3,6 +3,7 @@
 
 #include "Pokemon.hpp"
 #include <string>
+using namespace std;
 
 class Combat {
 public:
@@ -22,7 +23,7 @@ public:
 
     // Méthodes pour gérer le combat
     static ResultatAttaque calculerDegats(const Pokemon& attaquant, Pokemon& cible, bool estMaitre = false);
-    static void afficherAttaque(const std::string& nomAttaquant, const std::string& nomAttaque, int degatsBase, bool estMaitre = false);
+    static void afficherAttaque(const string& nomAttaquant, const string& nomAttaque, int degatsBase, bool estMaitre = false);
     static void afficherResultat(const ResultatAttaque& resultat, const Pokemon& cible);
     static void afficherEfficacite(double multiplicateur);
     static void afficherEtatPokemon(const Pokemon& pokemon);

@@ -7,13 +7,14 @@
 #include <algorithm>
 #include <cctype>
 #include <map>
+using namespace std;
 
 // Initialisation du cache statique
-std::map<std::string, Pokemon*> DataLoader::pokemonCache;
+map<string, Pokemon*> DataLoader::pokemonCache;
 
 // Fonction utilitaire pour normaliser les types
-std::string normaliserType(const std::string& type) {
-    static const std::map<std::string, std::string> conversions = {
+string normaliserType(const string& type) {
+    static const map<string, string> conversions = {
         {"Électrik", "Electrik"},
         {"ÉLECTRIK", "Electrik"},
         {"électrik", "Electrik"},
@@ -31,45 +32,45 @@ std::string normaliserType(const std::string& type) {
     return type;
 }
 
-Type DataLoader::stringToType(const std::string& typeStr) {
+Type DataLoader::stringToType(const string& typeStr) {
     if (typeStr.empty()) return Type::NORMAL;
     
     // Normaliser le type avant la conversion
-    std::string typeNormalise = normaliserType(typeStr);
+    string typeNormalise = normaliserType(typeStr);
     
     try {
         return Pokemon::stringToType(typeNormalise);
-    } catch (const std::invalid_argument& e) {
-        throw std::invalid_argument("Type de pokemon invalide: " + typeStr);
+    } catch (const invalid_argument& e) {
+        throw invalid_argument("Type de pokemon invalide: " + typeStr);
     }
 }
 
-std::vector<Pokemon*> DataLoader::chargerPokemons(const std::string& fichier) {
-    std::vector<Pokemon*> pokemons;
-    std::ifstream file(fichier);
+vector<Pokemon*> DataLoader::chargerPokemons(const string& fichier) {
+    vector<Pokemon*> pokemons;
+    ifstream file(fichier);
     
     if (!file.is_open()) {
-        throw std::runtime_error("Impossible d'ouvrir le fichier: " + fichier);
+        throw runtime_error("Impossible d'ouvrir le fichier: " + fichier);
     }
 
-    std::string ligne;
+    string ligne;
     // Ignorer la première ligne (en-têtes)
-    std::getline(file, ligne);
+    getline(file, ligne);
     
-    while (std::getline(file, ligne)) {
+    while (getline(file, ligne)) {
         if (!ligne.empty()) {
             auto donnees = splitLine(ligne, ',');
             try {
                 if (donnees.size() >= 6) {
-                    std::string nom = donnees[0];
-                    std::vector<Type> types;
+                    string nom = donnees[0];
+                    vector<Type> types;
                     types.push_back(stringToType(donnees[1]));
                     if (!donnees[2].empty()) {
                         types.push_back(stringToType(donnees[2]));
                     }
-                    int hp = std::stoi(donnees[3]);
-                    std::string nomAttaque = donnees[4];
-                    int degatsAttaque = std::stoi(donnees[5]);
+                    int hp = stoi(donnees[3]);
+                    string nomAttaque = donnees[4];
+                    int degatsAttaque = stoi(donnees[5]);
 
                     Pokemon* pokemon = new Pokemon(nom, types, hp, nomAttaque, degatsAttaque);
                     if (pokemon) {
@@ -77,9 +78,9 @@ std::vector<Pokemon*> DataLoader::chargerPokemons(const std::string& fichier) {
                         addPokemonToCache(pokemon->getNom(), pokemon);
                     }
                 }
-            } catch (const std::exception& e) {
+            } catch (const exception& e) {
                 // Log l'erreur mais continue le chargement
-                std::cerr << "Erreur lors du chargement d'un pokemon: " << e.what() << std::endl;
+                cerr << "Erreur lors du chargement d'un pokemon: " << e.what() << endl;
             }
         }
     }
@@ -87,17 +88,17 @@ std::vector<Pokemon*> DataLoader::chargerPokemons(const std::string& fichier) {
     return pokemons;
 }
 
-Joueur* DataLoader::chargerJoueur(const std::string& fichier, const std::string& nomJoueur) {
-    std::ifstream file(fichier);
+Joueur* DataLoader::chargerJoueur(const string& fichier, const string& nomJoueur) {
+    ifstream file(fichier);
     if (!file.is_open()) {
-        throw std::runtime_error("Impossible d'ouvrir le fichier: " + fichier);
+        throw runtime_error("Impossible d'ouvrir le fichier: " + fichier);
     }
 
-    std::string ligne;
+    string ligne;
     // Ignorer l'en-tête
-    std::getline(file, ligne);
+    getline(file, ligne);
     
-    while (std::getline(file, ligne)) {
+    while (getline(file, ligne)) {
         auto donnees = splitLine(ligne, ',');
         if (donnees.size() >= 2) { // Au moins le nom et un Pokémon
             // Si un nom de joueur spécifique est demandé, vérifier que c'est le bon
@@ -117,21 +118,21 @@ Joueur* DataLoader::chargerJoueur(const std::string& fichier, const std::string&
             return joueur;
         }
     }
-    throw std::runtime_error("Format de fichier joueur invalide ou joueur non trouvé");
+    throw runtime_error("Format de fichier joueur invalide ou joueur non trouvé");
 }
 
-std::vector<Joueur*> DataLoader::chargerTousJoueurs(const std::string& fichier) {
-    std::vector<Joueur*> joueurs;
-    std::ifstream file(fichier);
+vector<Joueur*> DataLoader::chargerTousJoueurs(const string& fichier) {
+    vector<Joueur*> joueurs;
+    ifstream file(fichier);
     if (!file.is_open()) {
-        throw std::runtime_error("Impossible d'ouvrir le fichier: " + fichier);
+        throw runtime_error("Impossible d'ouvrir le fichier: " + fichier);
     }
 
-    std::string ligne;
+    string ligne;
     // Ignorer l'en-tête
-    std::getline(file, ligne);
+    getline(file, ligne);
     
-    while (std::getline(file, ligne)) {
+    while (getline(file, ligne)) {
         auto donnees = splitLine(ligne, ',');
         if (donnees.size() >= 2) { // Au moins le nom et un Pokémon
             Joueur* joueur = new Joueur(donnees[0]);
@@ -148,34 +149,34 @@ std::vector<Joueur*> DataLoader::chargerTousJoueurs(const std::string& fichier) 
     }
     
     if (joueurs.empty()) {
-        throw std::runtime_error("Format de fichier joueur invalide ou fichier vide");
+        throw runtime_error("Format de fichier joueur invalide ou fichier vide");
     }
     
     return joueurs;
 }
 
-std::vector<Leader*> DataLoader::chargerLeaders(const std::string& fichier) {
-    std::vector<Leader*> leaders;
-    std::ifstream file(fichier);
+vector<Leader*> DataLoader::chargerLeaders(const string& fichier) {
+    vector<Leader*> leaders;
+    ifstream file(fichier);
     if (!file.is_open()) {
-        throw std::runtime_error("Impossible d'ouvrir le fichier: " + fichier);
+        throw runtime_error("Impossible d'ouvrir le fichier: " + fichier);
     }
     
-    std::string ligne;
+    string ligne;
     // Ignorer l'en-tête
-    std::getline(file, ligne);
+    getline(file, ligne);
     
-    while (std::getline(file, ligne)) {
+    while (getline(file, ligne)) {
         if (!ligne.empty()) {
             // Supprimer les caractères de fin de ligne indésirables
-            ligne.erase(std::remove(ligne.begin(), ligne.end(), '\r'), ligne.end());
-            ligne.erase(std::remove(ligne.begin(), ligne.end(), '%'), ligne.end());
+            ligne.erase(remove(ligne.begin(), ligne.end(), '\r'), ligne.end());
+            ligne.erase(remove(ligne.begin(), ligne.end(), '%'), ligne.end());
             
             auto donnees = splitLine(ligne, ',');
             
             try {
                 if (donnees.size() >= 4) {
-                    std::vector<Pokemon*> pokemons;
+                    vector<Pokemon*> pokemons;
                     for (size_t i = 3; i < donnees.size() && !donnees[i].empty(); ++i) {
                         if (donnees[i] != "null") {
                             Pokemon* pokemon = getPokemonFromCache(donnees[i]);
@@ -194,8 +195,8 @@ std::vector<Leader*> DataLoader::chargerLeaders(const std::string& fichier) {
                     Leader* leader = new Leader(donnees[0], pokemons, donnees[2], donnees[1], specialite);
                     leaders.push_back(leader);
                 }
-            } catch (const std::exception& e) {
-                std::cerr << "Erreur lors du chargement d'un leader : " << e.what() << std::endl;
+            } catch (const exception& e) {
+                cerr << "Erreur lors du chargement d'un leader : " << e.what() << endl;
             }
         }
     }
@@ -203,21 +204,21 @@ std::vector<Leader*> DataLoader::chargerLeaders(const std::string& fichier) {
     return leaders;
 }
 
-std::vector<Maitre*> DataLoader::chargerMaitres(const std::string& fichier) {
-    std::vector<Maitre*> maitres;
-    std::ifstream file(fichier);
+vector<Maitre*> DataLoader::chargerMaitres(const string& fichier) {
+    vector<Maitre*> maitres;
+    ifstream file(fichier);
     if (!file.is_open()) {
-        throw std::runtime_error("Impossible d'ouvrir le fichier: " + fichier);
+        throw runtime_error("Impossible d'ouvrir le fichier: " + fichier);
     }
 
-    std::string ligne;
+    string ligne;
     // Ignorer l'en-tête
-    std::getline(file, ligne);
+    getline(file, ligne);
     
-    while (std::getline(file, ligne)) {
+    while (getline(file, ligne)) {
         auto donnees = splitLine(ligne, ',');
         if (donnees.size() >= 2) { // Au moins le nom et un Pokémon
-            std::vector<Pokemon*> pokemons;
+            vector<Pokemon*> pokemons;
             for (size_t i = 1; i < donnees.size() && !donnees[i].empty(); ++i) {
                 Pokemon* pokemon = getPokemonFromCache(donnees[i]);
                 if (pokemon) {
@@ -229,18 +230,18 @@ std::vector<Maitre*> DataLoader::chargerMaitres(const std::string& fichier) {
     }
     
     if (maitres.empty()) {
-        throw std::runtime_error("Format de fichier maître invalide ou fichier vide");
+        throw runtime_error("Format de fichier maître invalide ou fichier vide");
     }
     
     return maitres;
 }
 
-std::vector<std::string> DataLoader::splitLine(const std::string& ligne, char delimiteur) {
-    std::vector<std::string> tokens;
-    std::stringstream ss(ligne);
-    std::string token;
+vector<string> DataLoader::splitLine(const string& ligne, char delimiteur) {
+    vector<string> tokens;
+    stringstream ss(ligne);
+    string token;
     
-    while (std::getline(ss, token, delimiteur)) {
+    while (getline(ss, token, delimiteur)) {
         // Supprimer les espaces au début et à la fin
         token.erase(0, token.find_first_not_of(" \t"));
         token.erase(token.find_last_not_of(" \t") + 1);
@@ -250,7 +251,7 @@ std::vector<std::string> DataLoader::splitLine(const std::string& ligne, char de
     return tokens;
 }
 
-Pokemon* DataLoader::getPokemonFromCache(const std::string& nom) {
+Pokemon* DataLoader::getPokemonFromCache(const string& nom) {
     auto it = pokemonCache.find(nom);
     if (it != pokemonCache.end()) {
         // Créer une copie du Pokémon pour éviter les problèmes de double libération
@@ -262,7 +263,7 @@ Pokemon* DataLoader::getPokemonFromCache(const std::string& nom) {
     return nullptr;
 }
 
-void DataLoader::addPokemonToCache(const std::string& nom, Pokemon* pokemon) {
+void DataLoader::addPokemonToCache(const string& nom, Pokemon* pokemon) {
     if (!pokemonCache.count(nom)) {
         pokemonCache[nom] = pokemon;
     }
@@ -276,106 +277,103 @@ void DataLoader::nettoyerCache() {
     pokemonCache.clear();
 }
 
-// Fonction pour charger les statistiques d'un joueur
-void DataLoader::chargerStatistiques(const std::string& fichier, Joueur* joueur) {
+void DataLoader::chargerStatistiques(const string& fichier, Joueur* joueur) {
     if (!joueur) return;
     
-    std::ifstream file(fichier);
-    if (!file.is_open()) {
-        std::cerr << "Attention: Impossible d'ouvrir le fichier de statistiques: " << fichier << std::endl;
-        return; // On continue sans statistiques
-    }
-
-    std::string ligne;
-    // Ignorer l'en-tête
-    std::getline(file, ligne);
-    
-    while (std::getline(file, ligne)) {
-        auto donnees = splitLine(ligne, ',');
-        if (donnees.size() >= 5 && donnees[0] == joueur->getNom()) {
-            // On a trouvé le joueur
-            try {
-                int badges = std::stoi(donnees[1]);
-                joueur->gagnerBadge(badges - joueur->getBadges()); // Mettre à jour le compteur de badges
+    try {
+        ifstream file(fichier);
+        if (!file.is_open()) {
+            cerr << "Attention: Impossible d'ouvrir le fichier de statistiques: " << fichier << endl;
+            return;
+        }
+        
+        string ligne;
+        // Ignorer l'en-tête
+        getline(file, ligne);
+        
+        while (getline(file, ligne)) {
+            auto donnees = splitLine(ligne, ',');
+            if (donnees.size() >= 4 && donnees[0] == joueur->getNom()) {
+                // Charger les statistiques
+                // Badges
+                int badges = stoi(donnees[1]);
+                joueur->gagnerBadge(badges);
                 
-                int victoires = std::stoi(donnees[2]);
-                joueur->gagnerCombat(victoires - joueur->getVictoires()); // Mettre à jour les victoires
+                // Victoires
+                int victoires = stoi(donnees[2]);
+                joueur->gagnerCombat(victoires);
                 
-                int defaites = std::stoi(donnees[3]);
-                joueur->perdreCombat(defaites - joueur->getDefaites()); // Mettre à jour les défaites
+                // Défaites
+                int defaites = stoi(donnees[3]);
+                joueur->perdreCombat(defaites);
                 
-                // Charger les badges spécifiques
+                // Badges gagnés
                 if (donnees.size() >= 5 && !donnees[4].empty()) {
-                    auto badgesGagnes = splitLine(donnees[4], ';');
-                    for (const auto& badge : badgesGagnes) {
+                    auto badgesStr = splitLine(donnees[4], ';');
+                    for (const auto& badge : badgesStr) {
                         joueur->ajouterBadge(badge);
                     }
                 }
                 
-                break; // On a trouvé et chargé les statistiques
-            } catch (const std::exception& e) {
-                std::cerr << "Erreur lors du chargement des statistiques: " << e.what() << std::endl;
+                break;
             }
         }
+    } catch (const exception& e) {
+        cerr << "Erreur lors du chargement des statistiques: " << e.what() << endl;
     }
 }
 
-// Fonction pour sauvegarder les statistiques d'un joueur
-void DataLoader::sauvegarderStatistiques(const std::string& fichier, const Joueur* joueur) {
+void DataLoader::sauvegarderStatistiques(const string& fichier, const Joueur* joueur) {
     if (!joueur) return;
     
-    // Lire le fichier actuel
-    std::vector<std::string> lignes;
+    // Lire toutes les lignes du fichier
+    vector<string> lignes;
     bool joueurTrouve = false;
     
-    {
-        std::ifstream fileIn(fichier);
-        if (fileIn.is_open()) {
-            std::string ligne;
-            // Lire l'en-tête
-            std::getline(fileIn, ligne);
-            lignes.push_back(ligne);
-            
-            // Lire les données et mettre à jour le joueur si trouvé
-            while (std::getline(fileIn, ligne)) {
-                auto donnees = splitLine(ligne, ',');
-                if (donnees.size() >= 1 && donnees[0] == joueur->getNom()) {
-                    // Mettre à jour la ligne du joueur
-                    std::string nouvelleLigne = joueur->getNom() + "," +
-                                               std::to_string(joueur->getBadges()) + "," +
-                                               std::to_string(joueur->getVictoires()) + "," +
-                                               std::to_string(joueur->getDefaites()) + "," +
-                                               joueur->getBadgesGagnesString();
-                    lignes.push_back(nouvelleLigne);
-                    joueurTrouve = true;
-                } else {
-                    lignes.push_back(ligne);
-                }
+    // Essayer d'ouvrir le fichier existant
+    ifstream fileIn(fichier);
+    if (fileIn.is_open()) {
+        string ligne;
+        // Lire la première ligne (en-tête)
+        getline(fileIn, ligne);
+        lignes.push_back(ligne); // Ajouter l'en-tête
+        
+        // Lire le reste du fichier
+        while (getline(fileIn, ligne)) {
+            auto donnees = splitLine(ligne, ',');
+            if (!donnees.empty() && donnees[0] == joueur->getNom()) {
+                // Mettre à jour les statistiques de ce joueur
+                joueurTrouve = true;
+                ligne = joueur->getNom() + "," + 
+                       to_string(joueur->getBadges()) + "," + 
+                       to_string(joueur->getVictoires()) + "," + 
+                       to_string(joueur->getDefaites()) + "," +
+                       joueur->getBadgesGagnesString();
             }
-        } else {
-            // Si le fichier n'existe pas, créer un en-tête
-            lignes.push_back("Nom,Badges,Victoires,Defaites,BadgesGagnes");
+            lignes.push_back(ligne);
         }
+        fileIn.close();
+    } else {
+        // Si le fichier n'existe pas, créer un en-tête
+        lignes.push_back("Nom,Badges,Victoires,Defaites,BadgesGagnes");
     }
     
     // Si le joueur n'a pas été trouvé, ajouter une nouvelle ligne
     if (!joueurTrouve) {
-        std::string nouvelleLigne = joueur->getNom() + "," +
-                                   std::to_string(joueur->getBadges()) + "," +
-                                   std::to_string(joueur->getVictoires()) + "," +
-                                   std::to_string(joueur->getDefaites()) + "," +
-                                   joueur->getBadgesGagnesString();
+        string nouvelleLigne = joueur->getNom() + "," + 
+                              to_string(joueur->getBadges()) + "," + 
+                              to_string(joueur->getVictoires()) + "," + 
+                              to_string(joueur->getDefaites()) + "," +
+                              joueur->getBadgesGagnesString();
         lignes.push_back(nouvelleLigne);
     }
     
-    // Réécrire le fichier avec les données mises à jour
-    std::ofstream fileOut(fichier);
-    if (!fileOut.is_open()) {
-        std::cerr << "Erreur: Impossible d'ouvrir le fichier pour écriture: " << fichier << std::endl;
-        return;
-    }
-    
-    for (const auto& ligne : lignes) {
-        fileOut << ligne << std::endl;
+    // Écrire toutes les lignes dans le fichier
+    ofstream fileOut(fichier);
+    if (fileOut.is_open()) {
+        for (const auto& ligne : lignes) {
+            fileOut << ligne << endl;
+        }
+        fileOut.close();
     }
 } 

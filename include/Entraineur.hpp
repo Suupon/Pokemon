@@ -5,22 +5,23 @@
 #include "Interagir.hpp"
 #include <string>
 #include <vector>
+using namespace std;
 
 class Entraineur : public Interagir {
 protected:
-    std::string nom;
-    std::vector<Pokemon*> pokemons;
+    string nom;
+    vector<Pokemon*> pokemons;
     static const size_t MAX_POKEMONS = 6;
 
 public:
-    Entraineur(const std::string& nom);
+    Entraineur(const string& nom);
     virtual ~Entraineur();
     virtual bool estMaitre() const { return false; }
 
 
     // Getters
-    std::string getNom() const { return nom; }
-    const std::vector<Pokemon*>& getPokemons() const { return pokemons; }
+    string getNom() const { return nom; }
+    const vector<Pokemon*>& getPokemons() const { return pokemons; }
 
     // Gestion des Pokémon
     bool ajouterPokemon(Pokemon* pokemon);
@@ -29,7 +30,7 @@ public:
     bool aPerdu() const;
 
     // Méthode virtuelle pure pour l'interaction
-    virtual std::string interagir() const = 0;
+    virtual string interagir() const = 0;
 };
 
 #endif 

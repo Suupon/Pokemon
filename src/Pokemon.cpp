@@ -5,17 +5,18 @@
 #include <cctype>
 #include <map>
 #include <string>
+using namespace std;
 
 // Initialisation des variables statiques
-std::random_device Pokemon::rd;
-std::mt19937 Pokemon::gen(rd());
-std::uniform_real_distribution<> Pokemon::dis(0.0, 1.0);
-std::map<Type, std::map<Type, double>> Pokemon::tableEfficacite;
+random_device Pokemon::rd;
+mt19937 Pokemon::gen(rd());
+uniform_real_distribution<> Pokemon::dis(0.0, 1.0);
+map<Type, map<Type, double>> Pokemon::tableEfficacite;
 
 // Fonction utilitaire pour convertir une chaîne en minuscules et sans accents
-std::string toLowerNoAccent(std::string str) {
-    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-    static const std::map<std::string, char> accentMap = {
+string toLowerNoAccent(string str) {
+    transform(str.begin(), str.end(), str.begin(), ::tolower);
+    static const map<string, char> accentMap = {
         {"é", 'e'}, {"è", 'e'}, {"ê", 'e'}, {"ë", 'e'},
         {"à", 'a'}, {"â", 'a'}, {"ä", 'a'},
         {"î", 'i'}, {"ï", 'i'},
@@ -24,7 +25,7 @@ std::string toLowerNoAccent(std::string str) {
         {"ÿ", 'y'}
     };
     
-    std::string result;
+    string result;
     for (size_t i = 0; i < str.length();) {
         bool found = false;
         for (const auto& [accent, replacement] : accentMap) {
@@ -43,8 +44,8 @@ std::string toLowerNoAccent(std::string str) {
     return result;
 }
 
-Type Pokemon::stringToType(const std::string& typeStr) {
-    std::string normalizedType = toLowerNoAccent(typeStr);
+Type Pokemon::stringToType(const string& typeStr) {
+    string normalizedType = toLowerNoAccent(typeStr);
     
     if (normalizedType == "normal") return Type::NORMAL;
     if (normalizedType == "feu") return Type::FEU;
@@ -65,7 +66,7 @@ Type Pokemon::stringToType(const std::string& typeStr) {
     if (normalizedType == "tenebres") return Type::TENEBRES;
     if (normalizedType == "fee") return Type::FEE;
     
-    throw std::invalid_argument("Type inconnu: " + typeStr);
+    throw invalid_argument("Type inconnu: " + typeStr);
 }
 
 void Pokemon::initTableEfficacite() {
@@ -238,8 +239,8 @@ void Pokemon::initTableEfficacite() {
     tableEfficacite[Type::ROCHE][Type::VOL] = 2.0;
 }
 
-Pokemon::Pokemon(const std::string& nom, const std::vector<Type>& types, int hp, 
-                const std::string& nomAttaque, int degatsAttaque)
+Pokemon::Pokemon(const string& nom, const vector<Type>& types, int hp, 
+                const string& nomAttaque, int degatsAttaque)
     : nom(nom), types(types), maxHp(hp), currentHp(hp), 
       nomAttaque(nomAttaque), degatsAttaque(degatsAttaque) {
     initTableEfficacite();
@@ -268,12 +269,12 @@ double Pokemon::getChanceCritique(double efficacite) const {
         chanceCritique *= efficacite;
     }
     
-    return std::min(0.20, std::max(0.05, chanceCritique));
+    return min(0.20, max(0.05, chanceCritique));
 }
 
-std::string Pokemon::interagir() const {
+string Pokemon::interagir() const {
 
-    static std::map<std::string, std::string> messagesInteraction = {
+    static map<string, string> messagesInteraction = {
         {"Bulbizarre", "Bulbizarre agite son bulbe avec enthousiasme !"},
         {"Herbizarre", "Herbizarre fait briller ses feuilles au soleil."},
         {"Florizarre", "Florizarre libère une agréable senteur de fleur."},

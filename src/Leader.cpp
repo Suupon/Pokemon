@@ -1,19 +1,20 @@
 #include "Leader.hpp"
 #include "Joueur.hpp"
+using namespace std;
 
-Leader::Leader(const std::string& nom, const std::vector<Pokemon*>& pokemons,
-               const std::string& badge, const std::string& gymnase, Type specialite)
+Leader::Leader(const string& nom, const vector<Pokemon*>& pokemons,
+               const string& badge, const string& gymnase, Type specialite)
     : Entraineur(nom), badge(badge), gymnase(gymnase), specialite(specialite), vaincu(false) {
     for (const auto& pokemon : pokemons) {
         ajouterPokemon(pokemon);
     }
 }
 
-std::string Leader::interagir() const {
+string Leader::interagir() const {
     return getNom() + " : \"Tu m'as prouvé ta valeur en remportant le " + badge + ". Continue à t'entraîner !\"";
 }
 
-std::string Leader::messageDefi() const {
+string Leader::messageDefi() const {
     return "Je suis " + getNom() + ", le Champion de l'" + gymnase + " ! Remporte le " + badge + " !";
 }
 
@@ -27,5 +28,5 @@ void Leader::donnerBadge(Entraineur& challenger) {
         joueur->gagnerBadge();
     }
     
-    std::string message = "Félicitations ! Tu as gagné le " + badge + " !";
+    string message = "Félicitations ! Tu as gagné le " + badge + " !";
 } 

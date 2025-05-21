@@ -2,11 +2,12 @@
 #define INTERAGIR_HPP
 
 #include <string>
+using namespace std;
 
 class Interagir {
 public:
     virtual ~Interagir() = default;
-    virtual std::string interagir() const = 0;
+    virtual string interagir() const = 0;
 };
 
 #endif // INTERAGIR_HPP 

@@ -1,6 +1,7 @@
 #include "Entraineur.hpp"
+using namespace std;
 
-Entraineur::Entraineur(const std::string& nom) : nom(nom) {}
+Entraineur::Entraineur(const string& nom) : nom(nom) {}
 
 Entraineur::~Entraineur() {
     for (auto pokemon : pokemons) {

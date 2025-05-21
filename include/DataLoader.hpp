@@ -8,29 +8,30 @@
 #include <string>
 #include <vector>
 #include <map>
+using namespace std;
 
 class DataLoader {
 private:
-    static std::map<std::string, Pokemon*> pokemonCache;
+    static map<string, Pokemon*> pokemonCache;
     
-    static std::vector<std::string> splitLine(const std::string& ligne, char delimiteur = ',');
-    static Type stringToType(const std::string& typeStr);
-    static Pokemon* creerPokemon(const std::string& nom, const std::vector<Type>& types, 
-                               int hp, const std::string& nomAttaque, int degatsAttaque);
-    static Pokemon* getPokemonFromCache(const std::string& nom);
-    static void addPokemonToCache(const std::string& nom, Pokemon* pokemon);
+    static vector<string> splitLine(const string& ligne, char delimiteur = ',');
+    static Type stringToType(const string& typeStr);
+    static Pokemon* creerPokemon(const string& nom, const vector<Type>& types, 
+                               int hp, const string& nomAttaque, int degatsAttaque);
+    static Pokemon* getPokemonFromCache(const string& nom);
+    static void addPokemonToCache(const string& nom, Pokemon* pokemon);
 
 public:
     // Chargement des données
-    static std::vector<Pokemon*> chargerPokemons(const std::string& fichier);
-    static Joueur* chargerJoueur(const std::string& fichier, const std::string& nomJoueur = "");
-    static std::vector<Joueur*> chargerTousJoueurs(const std::string& fichier);
-    static std::vector<Leader*> chargerLeaders(const std::string& fichier);
-    static std::vector<Maitre*> chargerMaitres(const std::string& fichier);
+    static vector<Pokemon*> chargerPokemons(const string& fichier);
+    static Joueur* chargerJoueur(const string& fichier, const string& nomJoueur = "");
+    static vector<Joueur*> chargerTousJoueurs(const string& fichier);
+    static vector<Leader*> chargerLeaders(const string& fichier);
+    static vector<Maitre*> chargerMaitres(const string& fichier);
     
     // Gestion des statistiques
-    static void chargerStatistiques(const std::string& fichier, Joueur* joueur);
-    static void sauvegarderStatistiques(const std::string& fichier, const Joueur* joueur);
+    static void chargerStatistiques(const string& fichier, Joueur* joueur);
+    static void sauvegarderStatistiques(const string& fichier, const Joueur* joueur);
     
     // Nettoyage du cache
     static void nettoyerCache();

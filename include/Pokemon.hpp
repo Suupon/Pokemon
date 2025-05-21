@@ -6,6 +6,7 @@
 #include <vector>
 #include <random>
 #include <map>
+using namespace std;
 
 enum class Type {
     NORMAL,
@@ -37,22 +38,22 @@ public:
     friend class Combat;  // Permet à Combat d'accéder aux membres privés
 
     // Fonction de conversion des chaînes en types
-    static Type stringToType(const std::string& typeStr);
+    static Type stringToType(const string& typeStr);
 
-    Pokemon(const std::string& nom, const std::vector<Type>& types, int hp, 
-            const std::string& nomAttaque, int degatsAttaque);
+    Pokemon(const string& nom, const vector<Type>& types, int hp, 
+            const string& nomAttaque, int degatsAttaque);
     virtual ~Pokemon() = default;
 
     // Getters
-    std::string getNom() const { return nom; }
-    const std::vector<Type>& getTypes() const { return types; }
+    string getNom() const { return nom; }
+    const vector<Type>& getTypes() const { return types; }
     int getMaxHp() const { return maxHp; }
     int getCurrentHp() const { return currentHp; }
-    std::string getNomAttaque() const { return nomAttaque; }
+    string getNomAttaque() const { return nomAttaque; }
     int getDegatsAttaque() const { return degatsAttaque; }
 
     // Méthodes de base
-    void subirDegats(int degats) { currentHp = std::max(0, currentHp - degats); }
+    void subirDegats(int degats) { currentHp = max(0, currentHp - degats); }
     bool estKO() const { return currentHp <= 0; }
     void soigner() { currentHp = maxHp; }
 
@@ -64,23 +65,23 @@ public:
     double getChanceCritique(double efficacite) const;
     
     // Implémentation de l'interface Interagir
-    std::string interagir() const override;
+    string interagir() const override;
 
 private:
-    std::string nom;
-    std::vector<Type> types;
+    string nom;
+    vector<Type> types;
     int maxHp;
     int currentHp;
-    std::string nomAttaque;
+    string nomAttaque;
     int degatsAttaque;
     
     // Générateur de nombres aléatoires
-    static std::random_device rd;
-    static std::mt19937 gen;
-    static std::uniform_real_distribution<> dis;
+    static random_device rd;
+    static mt19937 gen;
+    static uniform_real_distribution<> dis;
 
     // Table des efficacités des types
-    static std::map<Type, std::map<Type, double>> tableEfficacite;
+    static map<Type, map<Type, double>> tableEfficacite;
     static void initTableEfficacite();
 };
 
