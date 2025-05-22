@@ -29,7 +29,7 @@ public:
     void soignerEquipe();
     bool aPerdu() const;
 
-    // Méthode virtuelle pure pour l'interaction
+ 
     virtual string interagir() const = 0;
 };
 

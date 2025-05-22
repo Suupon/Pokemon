@@ -13,7 +13,7 @@
 #include <random>
 using namespace std;
 
-// Codes ANSI pour les couleurs
+// Codes couleurs
 const string RESET = "\033[0m";
 const string ROUGE = "\033[31m";
 const string VERT = "\033[32m";
@@ -64,13 +64,13 @@ void pause(int milliseconds = 1000) {
 bool combat(Joueur* joueur, Entraineur* adversaire) {
     cout << "\n=== PRÉPARATION DU COMBAT ===" << endl;
     
-    // Déterminer si l'adversaire est un Maître
+   
     bool estMaitre = adversaire->estMaitre();
     
-    // Nombre de Pokémon pour le combat
+    
     int nombrePokemonCombat = estMaitre ? 6 : 3;
     
-    // Vérifier l'état des Pokémon du joueur pour le combat
+    
     const auto& tousLesPokemonJoueur = joueur->getPokemons();
     for (size_t i = 0; i < nombrePokemonCombat && i < tousLesPokemonJoueur.size(); ++i) {
         if (tousLesPokemonJoueur[i]->getCurrentHp() <= 0) {
@@ -81,20 +81,20 @@ bool combat(Joueur* joueur, Entraineur* adversaire) {
         }
     }
     
-    // Si c'est un combat contre un Maître, vérifier que le joueur a au moins 6 Pokémon
+
     if (estMaitre && tousLesPokemonJoueur.size() < 6) {
         cout << "Pour défier un Maître, vous devez avoir au moins 6 Pokémon dans votre équipe !" << endl;
         cout << "Vous n'avez que " << tousLesPokemonJoueur.size() << " Pokémon." << endl;
         return false;
     }
     
-    // Sélectionner les Pokémon du joueur pour le combat
+    //Pokémons du joueur
     vector<Pokemon*> equipeJoueur;
     for (size_t i = 0; i < nombrePokemonCombat && i < tousLesPokemonJoueur.size(); ++i) {
         equipeJoueur.push_back(tousLesPokemonJoueur[i]);
     }
     
-    // Sélectionner les Pokémon de l'adversaire pour le combat
+    //Pokémons de l'adversaire
     vector<Pokemon*> equipeAdversaire;
     const vector<Pokemon*>& tousLesPokemonAdversaire = adversaire->getPokemons();
     for (size_t i = 0; i < nombrePokemonCombat && i < tousLesPokemonAdversaire.size(); ++i) {
@@ -107,7 +107,7 @@ bool combat(Joueur* joueur, Entraineur* adversaire) {
     cout << "\n=== DÉBUT DU COMBAT ===" << endl;
     cout << equipeJ.getNom() << " VS " << equipeA.getNom() << endl;
     
-    // Afficher les équipes au début du combat
+  
     cout << "\nÉquipe de " << equipeJ.getNom() << " :" << endl;
     for (const auto& pokemon : equipeJ.getPokemons()) {
         cout << "- " << pokemon->getNom() 
@@ -136,7 +136,7 @@ bool combat(Joueur* joueur, Entraineur* adversaire) {
             return true;
         }
 
-        // Afficher l'état des Pokémon au début du tour
+       
         cout << "\n=== TOUR DE COMBAT ===" << endl;
         cout << equipeJ.getNom() << " : ";
         Combat::afficherEtatPokemon(*pokemonJoueur);
@@ -157,7 +157,7 @@ bool combat(Joueur* joueur, Entraineur* adversaire) {
             continue;
         }
 
-        // Attaque de l'adversaire (avec bonus si c'est un Maître)
+        // Attaque de l'adversaire 
         Combat::afficherAttaque(pokemonAdversaire->getNom(), pokemonAdversaire->getNomAttaque(), pokemonAdversaire->getDegatsAttaque(), estMaitre);
         resultat = Combat::calculerDegats(*pokemonAdversaire, *pokemonJoueur, estMaitre);
         Combat::afficherResultat(resultat, *pokemonJoueur);
@@ -199,20 +199,20 @@ void afficherDetailsPokemon(const Pokemon* pokemon) {
     }
     cout << endl;
     
-    // Barre de vie colorée
+    // Barre de vie
     cout << CYAN << "Points de vie : " << RESET;
     int pourcentageVie = (pokemon->getCurrentHp() * 100) / pokemon->getMaxHp();
-    string couleurVie = ROUGE;  // Rouge par défaut
+    string couleurVie = ROUGE;  
     
     if (pourcentageVie > 70) {
-        couleurVie = VERT;  // Bonne santé
+        couleurVie = VERT;  
     } else if (pourcentageVie > 30) {
-        couleurVie = JAUNE;  // Santé moyenne
+        couleurVie = JAUNE;  
     }
     
     cout << couleurVie << pokemon->getCurrentHp() << RESET << "/" << GRAS << pokemon->getMaxHp() << RESET << " ";
     
-    // Afficher une barre de progression
+    // Barre de vie
     cout << "[";
     int barresPleines = (pourcentageVie * 20) / 100;
     for (int i = 0; i < 20; i++) {
@@ -258,7 +258,6 @@ void afficherEquipePokemonInteractif(const Entraineur* entraineur) {
 void soignerPokemonSpecifique(Joueur* joueur) {
     const auto& pokemons = joueur->getPokemons();
     
-    // Vérifier d'abord si des Pokémon sont blessés
     bool pokemonBlesses = false;
     for (const auto& pokemon : pokemons) {
         if (pokemon->getCurrentHp() < pokemon->getMaxHp()) {
@@ -273,7 +272,7 @@ void soignerPokemonSpecifique(Joueur* joueur) {
         return;
     }
 
-    // Afficher les Pokémon blessés
+
     cout << "\nVos Pokémon blessés :" << endl;
     int compteurBlesses = 0;
     for (size_t i = 0; i < pokemons.size(); ++i) {
@@ -294,7 +293,7 @@ void soignerPokemonSpecifique(Joueur* joueur) {
     int choixAction = lireChoix();
     
     if (choixAction == 1) {
-        // Soigner un Pokémon spécifique
+        
         cout << "\nChoisissez un Pokémon à soigner (1-" << pokemons.size() << ") ou 0 pour annuler : ";
         int choix = lireChoix();
         
@@ -494,7 +493,7 @@ void gererOrdrePokemon(Joueur* joueur) {
     }
 }
 
-// Fonction pour défier un autre dresseur
+
 void defierAutreDresseur(Joueur* joueurPrincipal, const string& fichierJoueurs) {
     // Charger tous les joueurs du fichier
     vector<Joueur*> autreDresseurs;
@@ -512,7 +511,7 @@ void defierAutreDresseur(Joueur* joueurPrincipal, const string& fichierJoueurs) 
         if (dresseur->getNom() != joueurPrincipal->getNom()) {
             dresseursFiltres.push_back(dresseur);
         } else {
-            delete dresseur; // On supprime la copie du joueur principal
+            delete dresseur;
         }
     }
     
@@ -547,7 +546,7 @@ void defierAutreDresseur(Joueur* joueurPrincipal, const string& fichierJoueurs) 
                 joueurPrincipal->gagnerCombat();
                 if (!adversaire->aEteVaincu()) {
                     adversaire->setVaincu(true);
-                    // Donner le badge au joueur (cette méthode appelle déjà gagnerBadge)
+                    // Donner le badge au joueur (appelle déjà gagnerBadge)
                     adversaire->donnerBadge(*joueurPrincipal);
                 }
             } else if (resultatCombat == false) {
@@ -563,9 +562,6 @@ void defierAutreDresseur(Joueur* joueurPrincipal, const string& fichierJoueurs) 
                 adversaire->soignerEquipe();
             }
             
-            // Soigner l'équipe de l'adversaire après le combat
-            adversaire->soignerEquipe();
-            
             continuer = false;
         } else {
             cout << "Choix invalide !" << endl;
@@ -580,7 +576,7 @@ void defierAutreDresseur(Joueur* joueurPrincipal, const string& fichierJoueurs) 
     dresseursFiltres.clear();
 }
 
-// Fonction pour changer de dresseur
+
 Joueur* changerDresseur(Joueur* joueurActuel, const string& fichierJoueurs) {
     // Charger tous les joueurs du fichier
     vector<Joueur*> tousJoueurs;
