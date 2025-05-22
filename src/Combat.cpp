@@ -86,13 +86,14 @@ void Combat::afficherResultat(const ResultatAttaque& resultat, const Pokemon& ci
         return;
     }
     
+    // Afficher le message de coup critique si applicable
     if (resultat.estCritique) {
         cout << "Coup critique !" << endl;
-    } else {
-        // Afficher le message d'efficacité uniquement s'il n'y a pas de bonus Maître ou si l'efficacité n'est pas neutre
-        if (!resultat.estMaitre || (resultat.multiplicateurType != 1.0)) {
-            afficherEfficacite(resultat.multiplicateurType);
-        }
+    }
+    
+   
+    if (resultat.multiplicateurType > 1.0 || resultat.multiplicateurType < 1.0) {
+        afficherEfficacite(resultat.multiplicateurType);
     }
     
     cout << "\n→ L'attaque inflige " << resultat.degatsFinaux << " dégâts" << endl;

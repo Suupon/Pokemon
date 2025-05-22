@@ -252,6 +252,14 @@ double Pokemon::getEfficaciteType(Type typeAttaque) const {
     for (Type typeDefenseur : types) {
         efficacite *= tableEfficacite[typeAttaque][typeDefenseur];
     }
+    
+    // Limiter l'efficacité maximale à 2.0 et minimale à 0.25
+    if (efficacite > 2.0) {
+        efficacite = 2.0;
+    } else if (efficacite < 0.25 && efficacite > 0.0) {
+        efficacite = 0.25;
+    }
+    
     return efficacite;
 }
 

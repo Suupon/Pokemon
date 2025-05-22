@@ -59,8 +59,6 @@ void pause(int milliseconds = 1000) {
     this_thread::sleep_for(chrono::milliseconds(milliseconds));
 }
 
-
-
 bool combat(Joueur* joueur, Entraineur* adversaire) {
     cout << "\n=== PRÉPARATION DU COMBAT ===" << endl;
     
@@ -493,7 +491,6 @@ void gererOrdrePokemon(Joueur* joueur) {
     }
 }
 
-
 void defierAutreDresseur(Joueur* joueurPrincipal, const string& fichierJoueurs) {
     // Charger tous les joueurs du fichier
     vector<Joueur*> autreDresseurs;
@@ -576,7 +573,6 @@ void defierAutreDresseur(Joueur* joueurPrincipal, const string& fichierJoueurs) 
     dresseursFiltres.clear();
 }
 
-
 Joueur* changerDresseur(Joueur* joueurActuel, const string& fichierJoueurs) {
     // Charger tous les joueurs du fichier
     vector<Joueur*> tousJoueurs;
@@ -623,6 +619,9 @@ Joueur* changerDresseur(Joueur* joueurActuel, const string& fichierJoueurs) {
         if (nouveauJoueur->getNom() != joueurActuel->getNom()) {
             cout << "Vous jouez maintenant avec " << nouveauJoueur->getNom() << " !" << endl;
             
+            // Charger les statistiques du nouveau joueur
+            DataLoader::chargerStatistiques("data/statistiques.csv", nouveauJoueur);
+            
             // Supprimer l'ancien joueur mais garder le nouveau
             for (Joueur* j : tousJoueurs) {
                 if (j->getNom() != nouveauJoueur->getNom()) {
@@ -651,7 +650,7 @@ Joueur* changerDresseur(Joueur* joueurActuel, const string& fichierJoueurs) {
     } else {
         cout << "Choix invalide !" << endl;
         
-       
+        // Libérer la mémoire des autres joueurs
         for (Joueur* j : tousJoueurs) {
             if (j->getNom() != joueurActuel->getNom()) {
                 delete j;
@@ -670,24 +669,50 @@ int main() {
     Maitre* maitreCourant = nullptr;
 
     try {
-        cout << "Chargement des Pokémons..." << endl;
-        
+        cout << "Chargement des Pokémons.." << endl;
+        // Charger d'abord tous les Pokémon disponibles
         DataLoader::chargerPokemons("data/pokemon.csv");
         
-        cout << "Chargement du joueur..." << endl;
-       
-        joueur = DataLoader::chargerJoueur("data/joueur.csv");
+        // Charger les joueurs disponibles
+        cout << "Chargement des joueurs..." << endl;
+        vector<Joueur*> joueursDisponibles = DataLoader::chargerTousJoueurs("data/joueur.csv");
         
+        // Permettre à l'utilisateur de choisir un joueur
+        cout << "\n" << GRAS << MAGENTA << "=== Sélection du dresseur ===" << RESET << endl;
+        cout << "Choisissez votre dresseur :" << endl;
         
+        for (size_t i = 0; i < joueursDisponibles.size(); ++i) {
+            cout << i + 1 << ". " << joueursDisponibles[i]->getNom() << endl;
+        }
+        
+        cout << "Votre choix : ";
+        int choixJoueur = lireChoix();
+        
+        if (choixJoueur < 1 || choixJoueur > static_cast<int>(joueursDisponibles.size())) {
+            cout << "Choix invalide ! Utilisation du premier dresseur par défaut." << endl;
+            choixJoueur = 1;
+        }
+        
+        // Sélectionner le joueur choisi
+        joueur = joueursDisponibles[choixJoueur - 1];
+        
+        // Libérer la mémoire des autres joueurs
+        for (size_t i = 0; i < joueursDisponibles.size(); ++i) {
+            if (i != choixJoueur - 1) {
+                delete joueursDisponibles[i];
+            }
+        }
+        
+        // Charger les statistiques du joueur
         cout << "Chargement des statistiques..." << endl;
         DataLoader::chargerStatistiques("data/statistiques.csv", joueur);
         
         cout << "Chargement des Leaders..." << endl;
-        
+        // Charger les Leaders
         leaders = DataLoader::chargerLeaders("data/leaders.csv");
         
         cout << "Chargement des Maîtres..." << endl;
-        
+        // Charger les Maîtres
         maitres = DataLoader::chargerMaitres("data/maitres.csv");
 
         cout << "Chargement terminé !" << endl;
