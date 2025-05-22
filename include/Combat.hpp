@@ -3,6 +3,7 @@
 
 #include "Pokemon.hpp"
 #include <string>
+#include <vector>
 using namespace std;
 
 class Combat {
@@ -19,6 +20,23 @@ public:
         bool estCritique;
         bool estImmunise;
         bool estMaitre;            // Indique si le bonus maître a été appliqué
+    };
+
+    // Classe pour gérer une équipe pendant le combat
+    class EquipeCombat {
+    private:
+        vector<Pokemon*> pokemons;
+        size_t indexActif;
+        string nomDresseur;
+
+    public:
+        EquipeCombat(const string& nom, const vector<Pokemon*>& equipe);
+        
+        Pokemon* getPokemonActif() const;
+        void pokemonKO();
+        const vector<Pokemon*>& getPokemons() const;
+        string getNom() const;
+        bool aPerdu() const;
     };
 
     // Méthodes pour gérer le combat

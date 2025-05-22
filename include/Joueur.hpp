@@ -10,8 +10,8 @@ private:
     int badges;
     int victoires;
     int defaites;
-    set<string> badgesGagnes; // Pour stocker les noms des badges gagnés
-    bool vaincu;  // Pour indiquer si le joueur a été vaincu (utilisé lors des combats contre d'autres joueurs)
+    set<string> badgesGagnes; 
+    bool vaincu; 
 
 public:
     Joueur(const string& nom);
@@ -32,19 +32,11 @@ public:
     void setBadgesGagnes(const set<string>& badges) { badgesGagnes = badges; }
     void setVaincu(bool etat) { vaincu = etat; }
     
-    // Méthode pour vérifier si un badge spécifique a été gagné
+    // Other methods
     bool possedeBadge(const string& badge) const { return badgesGagnes.find(badge) != badgesGagnes.end(); }
-
-    // Retourne les badges gagnés sous forme de chaîne CSV
     string getBadgesGagnesString() const;
-
-    // Méthode pour donner un badge (utilisée lors des combats entre joueurs)
     void donnerBadge(Entraineur& challenger);
-
-    // Gestion de l'ordre des Pokémon
     void echangerPokemon(int pos1, int pos2);
-
-    // Implémentation de la méthode interagir
     string interagir() const override;
 };
 

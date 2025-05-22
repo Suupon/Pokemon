@@ -59,39 +59,7 @@ void pause(int milliseconds = 1000) {
     this_thread::sleep_for(chrono::milliseconds(milliseconds));
 }
 
-class EquipeCombat {
-private:
-    vector<Pokemon*> pokemons;
-    size_t indexActif;
-    string nomDresseur;
 
-public:
-    EquipeCombat(const string& nom, const vector<Pokemon*>& equipe) 
-        : pokemons(equipe), indexActif(0), nomDresseur(nom) {}
-
-    Pokemon* getPokemonActif() const {
-        if (indexActif < pokemons.size()) {
-            return pokemons[indexActif];
-        }
-        return nullptr;
-    }
-
-    void pokemonKO() {
-        indexActif++;
-    }
-
-    const vector<Pokemon*>& getPokemons() const {
-        return pokemons;
-    }
-
-    string getNom() const {
-        return nomDresseur;
-    }
-
-    bool aPerdu() const {
-        return indexActif >= pokemons.size();
-    }
-};
 
 bool combat(Joueur* joueur, Entraineur* adversaire) {
     cout << "\n=== PRÉPARATION DU COMBAT ===" << endl;
@@ -133,8 +101,8 @@ bool combat(Joueur* joueur, Entraineur* adversaire) {
         equipeAdversaire.push_back(tousLesPokemonAdversaire[i]);
     }
 
-    EquipeCombat equipeJ(joueur->getNom(), equipeJoueur);
-    EquipeCombat equipeA(adversaire->getNom(), equipeAdversaire);
+    Combat::EquipeCombat equipeJ(joueur->getNom(), equipeJoueur);
+    Combat::EquipeCombat equipeA(adversaire->getNom(), equipeAdversaire);
 
     cout << "\n=== DÉBUT DU COMBAT ===" << endl;
     cout << equipeJ.getNom() << " VS " << equipeA.getNom() << endl;

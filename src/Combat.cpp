@@ -2,6 +2,33 @@
 #include <iostream>
 using namespace std;
 
+// Implementation of EquipeCombat class
+Combat::EquipeCombat::EquipeCombat(const string& nom, const vector<Pokemon*>& equipe) 
+    : pokemons(equipe), indexActif(0), nomDresseur(nom) {}
+
+Pokemon* Combat::EquipeCombat::getPokemonActif() const {
+    if (indexActif < pokemons.size()) {
+        return pokemons[indexActif];
+    }
+    return nullptr;
+}
+
+void Combat::EquipeCombat::pokemonKO() {
+    indexActif++;
+}
+
+const vector<Pokemon*>& Combat::EquipeCombat::getPokemons() const {
+    return pokemons;
+}
+
+string Combat::EquipeCombat::getNom() const {
+    return nomDresseur;
+}
+
+bool Combat::EquipeCombat::aPerdu() const {
+    return indexActif >= pokemons.size();
+}
+
 Combat::ResultatAttaque Combat::calculerDegats(const Pokemon& attaquant, Pokemon& cible, bool estMaitre) {
     ResultatAttaque resultat;
     resultat.degatsBase = attaquant.getDegatsAttaque();
@@ -10,7 +37,7 @@ Combat::ResultatAttaque Combat::calculerDegats(const Pokemon& attaquant, Pokemon
     Type typeAttaque = attaquant.getTypes()[0];
     resultat.multiplicateur = cible.getEfficaciteType(typeAttaque);
     
-    // Vérification de l'immunité
+    
     if (resultat.multiplicateur == 0.0) {
         resultat.estImmunise = true;
         resultat.degatsFinaux = 0;
@@ -19,7 +46,7 @@ Combat::ResultatAttaque Combat::calculerDegats(const Pokemon& attaquant, Pokemon
     
     resultat.estImmunise = false;
     
-    // Vérification du coup critique
+    
     resultat.estCritique = attaquant.estCoupCritique(resultat.multiplicateur);
     if (resultat.estCritique) {
         resultat.multiplicateur *= Pokemon::MULTIPLICATEUR_CRITIQUE;

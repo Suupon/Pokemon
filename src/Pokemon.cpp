@@ -7,13 +7,13 @@
 #include <string>
 using namespace std;
 
-// Initialisation des variables statiques
+
 random_device Pokemon::rd;
 mt19937 Pokemon::gen(rd());
 uniform_real_distribution<> Pokemon::dis(0.0, 1.0);
 map<Type, map<Type, double>> Pokemon::tableEfficacite;
 
-// Fonction utilitaire pour convertir une chaîne en minuscules et sans accents
+
 string toLowerNoAccent(string str) {
     transform(str.begin(), str.end(), str.begin(), ::tolower);
     static const map<string, char> accentMap = {
@@ -72,15 +72,15 @@ Type Pokemon::stringToType(const string& typeStr) {
 void Pokemon::initTableEfficacite() {
     if (!tableEfficacite.empty()) return;
 
-    // Initialisation des efficacités normales (1.0) par défaut
+    // Efficacités par défaut
     for (int i = 0; i <= static_cast<int>(Type::FEE); ++i) {
         for (int j = 0; j <= static_cast<int>(Type::FEE); ++j) {
             tableEfficacite[static_cast<Type>(i)][static_cast<Type>(j)] = 1.0;
         }
     }
 
-    // Définition des efficacités basées sur l'image fournie
-    // Acier défensif
+    // Définition des efficacités
+    // Acier
     tableEfficacite[Type::NORMAL][Type::ACIER] = 0.5;
     tableEfficacite[Type::FEU][Type::ACIER] = 2.0;
     tableEfficacite[Type::EAU][Type::ACIER] = 0.5;
@@ -97,7 +97,7 @@ void Pokemon::initTableEfficacite() {
     tableEfficacite[Type::DRAGON][Type::ACIER] = 0.5;
     tableEfficacite[Type::FEE][Type::ACIER] = 0.5;
 
-    // Combat défensif
+    // Combat
     tableEfficacite[Type::NORMAL][Type::COMBAT] = 1.0;
     tableEfficacite[Type::FEU][Type::COMBAT] = 1.0;
     tableEfficacite[Type::EAU][Type::COMBAT] = 1.0;
@@ -114,7 +114,7 @@ void Pokemon::initTableEfficacite() {
     tableEfficacite[Type::SPECTRE][Type::COMBAT] = 1.0;
     tableEfficacite[Type::FEE][Type::COMBAT] = 2.0;
 
-    // Dragon défensif
+    // Dragon
     tableEfficacite[Type::FEU][Type::DRAGON] = 0.5;
     tableEfficacite[Type::EAU][Type::DRAGON] = 0.5;
     tableEfficacite[Type::PLANTE][Type::DRAGON] = 0.5;
@@ -123,7 +123,7 @@ void Pokemon::initTableEfficacite() {
     tableEfficacite[Type::DRAGON][Type::DRAGON] = 2.0;
     tableEfficacite[Type::FEE][Type::DRAGON] = 0.0;
 
-    // Eau défensif
+    // Eau
     tableEfficacite[Type::FEU][Type::EAU] = 0.5;
     tableEfficacite[Type::EAU][Type::EAU] = 0.5;
     tableEfficacite[Type::PLANTE][Type::EAU] = 2.0;
@@ -131,20 +131,20 @@ void Pokemon::initTableEfficacite() {
     tableEfficacite[Type::GLACE][Type::EAU] = 0.5;
     tableEfficacite[Type::ACIER][Type::EAU] = 0.5;
 
-    // Electrik défensif
+    // Electrik
     tableEfficacite[Type::ELECTRIK][Type::ELECTRIK] = 0.5;
     tableEfficacite[Type::SOL][Type::ELECTRIK] = 2.0;
     tableEfficacite[Type::VOL][Type::ELECTRIK] = 0.5;
     tableEfficacite[Type::ACIER][Type::ELECTRIK] = 0.5;
 
-    // Fee défensif
+    // Fee
     tableEfficacite[Type::COMBAT][Type::FEE] = 0.5;
     tableEfficacite[Type::POISON][Type::FEE] = 2.0;
     tableEfficacite[Type::INSECTE][Type::FEE] = 0.5;
     tableEfficacite[Type::DRAGON][Type::FEE] = 0.0;
     tableEfficacite[Type::ACIER][Type::FEE] = 2.0;
 
-    // Feu défensif
+    // Feu 
     tableEfficacite[Type::FEU][Type::FEU] = 0.5;
     tableEfficacite[Type::EAU][Type::FEU] = 2.0;
     tableEfficacite[Type::PLANTE][Type::FEU] = 0.5;
@@ -156,14 +156,14 @@ void Pokemon::initTableEfficacite() {
     tableEfficacite[Type::ACIER][Type::FEU] = 0.5;
     tableEfficacite[Type::FEE][Type::FEU] = 0.5;
 
-    // Glace défensif
+    // Glace 
     tableEfficacite[Type::FEU][Type::GLACE] = 2.0;
     tableEfficacite[Type::GLACE][Type::GLACE] = 0.5;
     tableEfficacite[Type::COMBAT][Type::GLACE] = 2.0;
     tableEfficacite[Type::ROCHE][Type::GLACE] = 2.0;
     tableEfficacite[Type::ACIER][Type::GLACE] = 2.0;
 
-    // Insecte défensif
+    // Insecte
     tableEfficacite[Type::FEU][Type::INSECTE] = 2.0;
     tableEfficacite[Type::PLANTE][Type::INSECTE] = 0.5;
     tableEfficacite[Type::COMBAT][Type::INSECTE] = 0.5;
@@ -171,11 +171,11 @@ void Pokemon::initTableEfficacite() {
     tableEfficacite[Type::VOL][Type::INSECTE] = 2.0;
     tableEfficacite[Type::ROCHE][Type::INSECTE] = 2.0;
 
-    // Normal défensif
+    // Normal
     tableEfficacite[Type::COMBAT][Type::NORMAL] = 2.0;
     tableEfficacite[Type::SPECTRE][Type::NORMAL] = 0.0;
 
-    // Plante défensif
+    // Plante
     tableEfficacite[Type::FEU][Type::PLANTE] = 2.0;
     tableEfficacite[Type::EAU][Type::PLANTE] = 0.5;
     tableEfficacite[Type::PLANTE][Type::PLANTE] = 0.5;
@@ -186,7 +186,7 @@ void Pokemon::initTableEfficacite() {
     tableEfficacite[Type::VOL][Type::PLANTE] = 2.0;
     tableEfficacite[Type::INSECTE][Type::PLANTE] = 2.0;
 
-    // Poison défensif
+    // Poison
     tableEfficacite[Type::PLANTE][Type::POISON] = 0.5;
     tableEfficacite[Type::COMBAT][Type::POISON] = 0.5;
     tableEfficacite[Type::POISON][Type::POISON] = 0.5;
@@ -195,14 +195,14 @@ void Pokemon::initTableEfficacite() {
     tableEfficacite[Type::INSECTE][Type::POISON] = 0.5;
     tableEfficacite[Type::FEE][Type::POISON] = 0.5;
 
-    // Psy défensif
+    // Psy
     tableEfficacite[Type::COMBAT][Type::PSY] = 0.5;
     tableEfficacite[Type::PSY][Type::PSY] = 0.5;
     tableEfficacite[Type::INSECTE][Type::PSY] = 2.0;
     tableEfficacite[Type::SPECTRE][Type::PSY] = 2.0;
     tableEfficacite[Type::TENEBRES][Type::PSY] = 2.0;
 
-    // Roche défensif
+    // Roche
     tableEfficacite[Type::NORMAL][Type::ROCHE] = 0.5;
     tableEfficacite[Type::FEU][Type::ROCHE] = 0.5;
     tableEfficacite[Type::EAU][Type::ROCHE] = 2.0;
@@ -213,7 +213,7 @@ void Pokemon::initTableEfficacite() {
     tableEfficacite[Type::VOL][Type::ROCHE] = 0.5;
     tableEfficacite[Type::ACIER][Type::ROCHE] = 2.0;
 
-    // Sol défensif
+    // Sol 
     tableEfficacite[Type::EAU][Type::SOL] = 2.0;
     tableEfficacite[Type::PLANTE][Type::SOL] = 2.0;
     tableEfficacite[Type::ELECTRIK][Type::SOL] = 0.0;
@@ -221,7 +221,7 @@ void Pokemon::initTableEfficacite() {
     tableEfficacite[Type::POISON][Type::SOL] = 0.5;
     tableEfficacite[Type::ROCHE][Type::SOL] = 0.5;
 
-    // Spectre défensif
+    // Spectre
     tableEfficacite[Type::NORMAL][Type::SPECTRE] = 0.0;
     tableEfficacite[Type::COMBAT][Type::SPECTRE] = 0.0;
     tableEfficacite[Type::POISON][Type::SPECTRE] = 0.5;
@@ -229,7 +229,7 @@ void Pokemon::initTableEfficacite() {
     tableEfficacite[Type::SPECTRE][Type::SPECTRE] = 2.0;
     tableEfficacite[Type::TENEBRES][Type::SPECTRE] = 2.0;
 
-    // Vol défensif
+    // Vol
     tableEfficacite[Type::PLANTE][Type::VOL] = 0.5;
     tableEfficacite[Type::ELECTRIK][Type::VOL] = 2.0;
     tableEfficacite[Type::GLACE][Type::VOL] = 2.0;
@@ -302,6 +302,6 @@ string Pokemon::interagir() const {
         return it->second;
     }
     
-    // Message par défaut si l'espèce n'a pas de message spécifique
+    // Message par défaut
     return nom + " vous regarde avec curiosité !";
 } 
