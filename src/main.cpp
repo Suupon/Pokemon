@@ -26,14 +26,14 @@ const string GRAS = "\033[1m";
 
 void afficherMenu() {
     cout << "\n" << GRAS << MAGENTA << "=== Menu Principal ===" << RESET << endl;
-    cout << CYAN << "1. Afficher mes Pokémon" << RESET << endl;
-    cout << CYAN << "2. Soigner mes Pokémon" << RESET << endl;
+    cout << CYAN << "1. Afficher mes Pokémons" << RESET << endl;
+    cout << CYAN << "2. Soigner mes Pokémons" << RESET << endl;
     cout << CYAN << "3. Afficher mes stats" << RESET << endl;
     cout << VERT << "4. Défier un Leader" << RESET << endl;
     cout << VERT << "5. Défier un Maître" << RESET << endl;
     cout << VERT << "6. Défier un autre dresseur" << RESET << endl;
-    cout << CYAN << "7. Interagir avec les Pokémon/Entraîneurs" << RESET << endl;
-    cout << CYAN << "8. Gérer l'ordre des Pokémon" << RESET << endl;
+    cout << CYAN << "7. Interagir avec les Pokémons/Entraîneurs" << RESET << endl;
+    cout << CYAN << "8. Gérer l'ordre des Pokémons" << RESET << endl;
     cout << CYAN << "9. Changer de dresseur" << RESET << endl;
     cout << ROUGE << "0. Quitter" << RESET << endl;
     cout << GRAS << "Votre choix : " << RESET;
@@ -655,7 +655,7 @@ Joueur* changerDresseur(Joueur* joueurActuel, const string& fichierJoueurs) {
     } else {
         cout << "Choix invalide !" << endl;
         
-        // Libérer la mémoire de tous les joueurs sauf l'actuel
+       
         for (Joueur* j : tousJoueurs) {
             if (j->getNom() != joueurActuel->getNom()) {
                 delete j;
@@ -671,27 +671,27 @@ int main() {
     Joueur* joueur = nullptr;
     vector<Leader*> leaders;
     vector<Maitre*> maitres;
-    Maitre* maitreCourant = nullptr; // Le maître actuellement sélectionné pour le combat
+    Maitre* maitreCourant = nullptr;
 
     try {
-        cout << "Chargement des Pokémon..." << endl;
-        // Charger d'abord tous les Pokémon disponibles
+        cout << "Chargement des Pokémons..." << endl;
+        
         DataLoader::chargerPokemons("data/pokemon.csv");
         
         cout << "Chargement du joueur..." << endl;
-        // Charger le joueur avec ses Pokémon
+       
         joueur = DataLoader::chargerJoueur("data/joueur.csv");
         
-        // Charger les statistiques du joueur
+        
         cout << "Chargement des statistiques..." << endl;
         DataLoader::chargerStatistiques("data/statistiques.csv", joueur);
         
         cout << "Chargement des Leaders..." << endl;
-        // Charger les Leaders
+        
         leaders = DataLoader::chargerLeaders("data/leaders.csv");
         
         cout << "Chargement des Maîtres..." << endl;
-        // Charger les Maîtres
+        
         maitres = DataLoader::chargerMaitres("data/maitres.csv");
 
         cout << "Chargement terminé !" << endl;
@@ -707,7 +707,7 @@ int main() {
         int choix = lireChoix();
 
         switch (choix) {
-            case 1: // Afficher Pokémon
+            case 1: // Liste Pokémons
                 afficherEquipePokemonInteractif(joueur);
                 break;
 
@@ -722,7 +722,7 @@ int main() {
                     cout << "\n" << GRAS << MAGENTA << "=== Statistiques de " << joueur->getNom() << " ===" << RESET << endl;
                     cout << "Badges : " << joueur->getBadges() << endl;
                     
-                    // Afficher les badges spécifiques gagnés
+                   
                     const auto& badgesGagnes = joueur->getBadgesGagnes();
                     if (!badgesGagnes.empty()) {
                         cout << "Badges gagnés : ";
@@ -758,7 +758,7 @@ int main() {
                 break;
                 }
 
-            case 4: // Défier Leader
+            case 4: // Leaders
                 if (leaders.empty()) {
                     cout << "Aucun Leader disponible." << endl;
                     pause();
@@ -811,7 +811,7 @@ int main() {
                 }
                 break;
 
-            case 5: // Défier Maître
+            case 5: // Maitres
                 if (joueur->getBadges() < leaders.size()) {
                     cout << "Vous devez avoir vaincu tous les Leaders (" 
                              << leaders.size() << " badges) pour défier un Maître !" << endl;
@@ -860,7 +860,7 @@ int main() {
                 }
                 break;
 
-            case 6: // Défier un autre dresseur
+            case 6: // Dresseurs
                 defierAutreDresseur(joueur, "data/joueur.csv");
                 break;
 
@@ -868,11 +868,11 @@ int main() {
                 interagirAvecPokemonEtEntraineurs(joueur, maitreCourant, leaders, maitres);
                 break;
 
-            case 8: // Gérer l'ordre des Pokémon
+            case 8: // Gérer l'ordre des Pokémons
                 gererOrdrePokemon(joueur);
                 break;
 
-            case 9: // Changer de dresseur
+            case 9: // Changer de dresseurs
                 joueur = changerDresseur(joueur, "data/joueur.csv");
                 break;
 
