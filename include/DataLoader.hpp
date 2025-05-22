@@ -22,19 +22,19 @@ private:
     static void addPokemonToCache(const string& nom, Pokemon* pokemon);
 
 public:
-    // Chargement des données
+   
     static vector<Pokemon*> chargerPokemons(const string& fichier);
     static Joueur* chargerJoueur(const string& fichier, const string& nomJoueur = "");
     static vector<Joueur*> chargerTousJoueurs(const string& fichier);
     static vector<Leader*> chargerLeaders(const string& fichier);
     static vector<Maitre*> chargerMaitres(const string& fichier);
     
-    // Gestion des statistiques
+
     static void chargerStatistiques(const string& fichier, Joueur* joueur);
     static void sauvegarderStatistiques(const string& fichier, const Joueur* joueur);
     
-    // Nettoyage du cache
+
     static void nettoyerCache();
 };
 
-#endif // DATALOADER_HPP 
+#endif 
